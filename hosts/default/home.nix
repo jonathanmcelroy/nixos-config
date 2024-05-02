@@ -97,23 +97,14 @@ in {
   # Configure vim/nvim
   programs.vim = {
     enable = true;
-    extraConfig = builtins.readFile (dotfiles_path + "/.vimrc");
+    # extraConfig = builtins.readFile (dotfiles_path + "/.vimrc");
   };
   programs.neovim = {
     enable = true;
     defaultEditor = true;
-    coc.enable = true;
-    extraConfig = ''
-      set shiftwidth=2                    " the number of spaces for auto indent
-      set expandtab                       " new tabs are spaces
-      set tabstop=2                       " the number of columns when tab is pressed
-      set softtabstop=2                   " Let backspace delete indent
-      
-      set splitright                      " new vsplits are to the right
-      set splitbelow                      " new hsplits are below
-    '';
+    # coc.enable = true;
+    extraLuaConfig = builtins.readFile ./nvim.lua;
   };
-
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
