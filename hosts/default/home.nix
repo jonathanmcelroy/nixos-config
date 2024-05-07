@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 
 let 
   dotfiles_path = builtins.fetchGit {
@@ -40,6 +40,8 @@ in {
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
+
+    # inputs.packages.x86_64-linux.rebuild
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -56,7 +58,11 @@ in {
     #   org.gradle.daemon.idletimeout=3600000
     # '';
 
-    ".config/vimrc".source = dotfiles_path + "/.vimrc";
+    ".local/bin/rebuild".text = ''
+      #!/bin/bash
+
+      sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/nixos#default
+    '';
   };
 
   # Home Manager can also manage your environment variables through
@@ -87,17 +93,19 @@ in {
     rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/nixos#default";
   };
 
-  # Enable git
+  # Configure git
   programs.git = {
     enable = true;
     userName = "Jonathan McElroy";
     userEmail = "jonathanpmcelroy@gmail.com";
+    attributes = [
+      "init.defaultBranch = main"
+    ];
   };
 
   # Configure vim/nvim
   programs.vim = {
     enable = true;
-    # extraConfig = builtins.readFile (dotfiles_path + "/.vimrc");
   };
   programs.neovim = {
     enable = true;

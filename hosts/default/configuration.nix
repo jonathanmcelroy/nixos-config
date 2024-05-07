@@ -59,6 +59,22 @@
     xkbVariant = "";
   };
 
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+    driSupport32Bit = true;
+  };
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = true;
+    nvidiaSettings = true;
+
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+
+  services.xserver.videoDrivers = [ "nvidia" ];
+
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
@@ -115,6 +131,7 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfreePredicate = _: true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -125,6 +142,8 @@
     unzipNLS
     libgcc
     ripgrep
+
+    discord
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
