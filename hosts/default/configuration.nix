@@ -144,6 +144,10 @@
     ripgrep
 
     discord
+
+    libreoffice-qt
+    hunspell
+    hunspellDicts.en_US
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
