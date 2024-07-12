@@ -145,10 +145,14 @@
     ripgrep
 
     discord
+    # dropbox
 
     libreoffice-qt
     hunspell
     hunspellDicts.en_US
+
+    # keepass
+    keepassxc
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
