@@ -143,6 +143,7 @@
     unzipNLS
     libgcc
     ripgrep
+    vscode
 
     discord
     # dropbox
