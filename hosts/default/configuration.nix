@@ -136,23 +136,32 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    git
-    vim
     wget
     gnumake
     unzipNLS
     libgcc
+
+    # General Dev
+    git
+    vim
     ripgrep
     vscode
 
+    # Rust
+    rustc
+    cargo
+
+    # Communication
     discord
     # dropbox
 
+    # Office
     libreoffice-qt
     hunspell
     hunspellDicts.en_US
+    obsidian
 
-    # keepass
+    # Passwords
     keepassxc
   ];
 
