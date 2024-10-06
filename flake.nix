@@ -20,12 +20,25 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: {
-    nixosConfigurations.default = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
+  outputs = inputs @ { 
+    self,
+    nixpkgs,
+    home-manager,
+    ...
+  }: {
+    nixosConfigurations.default = let 
+      username = "jmcelroy";
+      specialArgs = {inherit username;};
+    in nixpkgs.lib.nixosSystem {
+      inherit specialArgs;
       modules = [
         ./hosts/default/configuration.nix
-        # inputs.home-manager.nixosModules.default
+        ./users/${username}/nixos.nix
+
+        home-manager.nixosModules.home-manager {
+          home-manager.extraSpecialArgs = inputs // specialArgs;
+          home-manager.users.${username} = import ./users/${username}/home.nix;
+        }
       ];
     };
   };

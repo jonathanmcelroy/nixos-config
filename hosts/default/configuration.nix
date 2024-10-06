@@ -115,7 +115,7 @@
   # };
 
   # Install firefox.
-  programs.firefox.enable = true;
+  # programs.firefox.enable = true;
 
   # Install Steam
   # programs.steam = {
@@ -135,15 +135,15 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #   wget
-  #   gnumake
-  #   unzipNLS
-  #   libgcc
+    wget
+    gnumake
+    unzipNLS
+    libgcc
 
   #   # General Dev
-  #   git
-  #   vim
-  #   ripgrep
+    git
+    vim
+    ripgrep
     vscode
 
   #   # Rust
