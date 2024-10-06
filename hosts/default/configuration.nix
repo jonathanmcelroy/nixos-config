@@ -8,7 +8,6 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      inputs.home-manager.nixosModules.default
     ];
 
   # Bootloader.
@@ -108,26 +107,26 @@
     ];
   };
  
-  home-manager = {
-    extraSpecialArgs = { inherit inputs; };
-    users = {
-      "jmcelroy" = import ./home.nix;
-    };
-  };
+  # home-manager = {
+  #   extraSpecialArgs = { inherit inputs; };
+  #   users = {
+  #     "jmcelroy" = import ./home.nix;
+  #   };
+  # };
 
   # Install firefox.
   programs.firefox.enable = true;
 
   # Install Steam
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-  };
+  # programs.steam = {
+  #   enable = true;
+  #   remotePlay.openFirewall = true;
+  #   dedicatedServer.openFirewall = true;
+  # };
 
   # Make Vim the default editor
-  programs.vim.defaultEditor = true;
-  environment.variables.SUDO_EDITOR = "vim";
+  # programs.vim.defaultEditor = true;
+  # environment.variables.SUDO_EDITOR = "vim";
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -136,33 +135,33 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget
-    gnumake
-    unzipNLS
-    libgcc
+  #   wget
+  #   gnumake
+  #   unzipNLS
+  #   libgcc
 
-    # General Dev
-    git
-    vim
-    ripgrep
+  #   # General Dev
+  #   git
+  #   vim
+  #   ripgrep
     vscode
 
-    # Rust
-    rustc
-    cargo
+  #   # Rust
+  #   rustc
+  #   cargo
 
-    # Communication
-    discord
-    # dropbox
+  #   # Communication
+  #   discord
+  #   # dropbox
 
-    # Office
-    libreoffice-qt
-    hunspell
-    hunspellDicts.en_US
-    obsidian
+  #   # Office
+  #   libreoffice-qt
+  #   hunspell
+  #   hunspellDicts.en_US
+  #   obsidian
 
-    # Passwords
-    keepassxc
+  #   # Passwords
+  #   keepassxc
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
