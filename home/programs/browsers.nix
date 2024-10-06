@@ -15,7 +15,6 @@
 
     firefox = {
       enable = true;
-      profiles.${username} = {};
     };
   };
 }
