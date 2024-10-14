@@ -13,8 +13,10 @@ in {
   # add environment variables
   home.sessionVariables = {
     # set default applications
-    EDITOR = "vim";
     BROWSER = "firefox";
+
+    # Setting programs.neovim.defaultEditor = true overrides this
+    # EDITOR = "vim";
   };
 
   home.shellAliases = {

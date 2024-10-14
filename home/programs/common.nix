@@ -53,6 +53,13 @@
     zsh.enable = true;
     fish.enable = true;
 
+    neovim = {
+      enable = true;
+      defaultEditor = true;
+      # coc.enable = true;
+      extraLuaConfig = builtins.readFile ./nvim.lua;
+    };
+
     tmux = {
       enable = true;
       clock24 = true;
