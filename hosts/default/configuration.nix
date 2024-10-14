@@ -123,35 +123,6 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    wget
-    gnumake
-    unzipNLS
-    libgcc
-
-  #   # General Dev
-    # git
-    vim
-    # ripgrep
-    # vscode
-
-  #   # Rust
-  #   rustc
-  #   cargo
-
-  #   # Communication
-  #   discord
-  #   # dropbox
-
-  #   # Office
-  #   libreoffice-qt
-  #   hunspell
-  #   hunspellDicts.en_US
-  #   obsidian
-
-  #   # Passwords
-  #   keepassxc
-  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

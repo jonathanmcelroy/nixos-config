@@ -29,10 +29,23 @@
     docker-compose
     kubectl
 
+    # Node
     nodejs
     nodePackages.npm
     nodePackages.pnpm
     yarn
+
+    # Office
+    libreoffice-qt
+    hunspell
+    hunspellDicts.en_US
+    obsidian
+
+    # Communication
+    discord
+
+    # Passwords
+    keepassxc
   ];
 
   programs = {
