@@ -93,13 +93,6 @@
   # Install firefox.
   # programs.firefox.enable = true;
 
-  # Install Steam
-  # programs.steam = {
-  #   enable = true;
-  #   remotePlay.openFirewall = true;
-  #   dedicatedServer.openFirewall = true;
-  # };
-
   # Make Vim the default editor
   # programs.vim.defaultEditor = true;
   # environment.variables.SUDO_EDITOR = "vim";
