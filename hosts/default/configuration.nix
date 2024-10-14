@@ -6,7 +6,10 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [ 
+      ../../modules/system.nix
+
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
 
@@ -97,16 +100,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.jmcelroy = {
-    isNormalUser = true;
-    description = "Jonathan McElroy";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-    #  thunderbird
-    ];
-  };
- 
   # home-manager = {
   #   extraSpecialArgs = { inherit inputs; };
   #   users = {
@@ -128,10 +121,6 @@
   # programs.vim.defaultEditor = true;
   # environment.variables.SUDO_EDITOR = "vim";
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowUnfreePredicate = _: true;
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -141,10 +130,10 @@
     libgcc
 
   #   # General Dev
-    git
+    # git
     vim
-    ripgrep
-    vscode
+    # ripgrep
+    # vscode
 
   #   # Rust
   #   rustc
