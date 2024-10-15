@@ -25,4 +25,20 @@ in {
 
     # k = "kubectl";
   };
+
+  programs = {
+    bash = {
+      enable = true;
+      shellOptions = [
+        "histappend"
+        "checkwinsize"
+        "extglob"
+        "globstar"
+        "checkjobs"
+      ];
+      bashrcExtra = "set -o vi";
+    };
+    zsh.enable = true;
+    fish.enable = true;
+  };
 }
