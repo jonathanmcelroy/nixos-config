@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   ##################################################################################################################
@@ -12,20 +12,10 @@
   nixpkgs.config.allowUnfreePredicate = _: true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.jmcelroy = {
+  users.users.jmcelroy-dev = {
     isNormalUser = true;
-    description = "Jonathan's Home User";
+    description = "Jonathan's Dev User";
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
-  # Install Steam
-  programs = {
-    steam = {
-      enable = true;
-      remotePlay.openFirewall = true;
-      dedicatedServer.openFirewall = true;
-    };
-
-    dconf.enable = true;
-  };
 }
