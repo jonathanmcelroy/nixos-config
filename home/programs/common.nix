@@ -94,5 +94,7 @@
 
   services = {
     syncthing.enable = true;
+
+    easyeffects.enable = true;
   };
 }
