@@ -24,6 +24,7 @@
 
       userSettings = {
         git.confirmSync = false;
+        window.titleBarStyle = "custom";
       };
     };
   };
