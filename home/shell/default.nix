@@ -22,6 +22,7 @@ in {
   home.shellAliases = {
     jmc-nixos-rebuild = "sudo nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#default' --show-trace --print-build-logs --verbose";
     jmc-nixos-test = "sudo nixos-rebuild test --flake '/usr/local/src/nixos-configuration#default' --show-trace --print-build-logs --verbose";
+    jmc-nixos-edit = "code /usr/local/src/nixos-configuration";
 
     # k = "kubectl";
   };
