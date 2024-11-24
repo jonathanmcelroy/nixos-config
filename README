@@ -1,0 +1,17 @@
+Jonathan McElroy's NixOS configuration
+======
+
+This configurtion is for all my machines that I manage.
+
+Resources
+===
+
+[NixOS manual](https://nix.dev/manual/nix/2.18/language/)
+
+[NixOS and flakes book](https://nixos-and-flakes.thiscute.world/)
+
+[NixOS options search](https://search.nixos.org/options?channel=24.05)
+
+[NixOS packages search](https://search.nixos.org/packages?channel=24.05)
+
+[NixOS home manager options search](https://home-manager-options.extranix.com/?release=release-24.05)
