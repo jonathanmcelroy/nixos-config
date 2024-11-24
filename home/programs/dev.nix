@@ -21,6 +21,10 @@
         pkgs.vscode-extensions.vscodevim.vim
         pkgs.vscode-extensions.bbenoist.nix
       ];
+
+      userSettings = {
+        git.confirmSync = false;
+      };
     };
   };
 }
