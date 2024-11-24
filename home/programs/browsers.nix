@@ -12,6 +12,17 @@
 
     firefox = {
       enable = true;
+
+      policies = {
+        SearchSuggestionsEnabled = true;
+        SearchEngines.Default = "DuckDuckGo";
+      };
+
+      # profiles.dev = {
+      #   extensions = [
+      #     "bitwarden_password_manager"
+      #   ];
+      # };
     };
   };
 }
