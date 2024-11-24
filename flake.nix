@@ -42,15 +42,9 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
 
-          home-manager.extraSpecialArgs = inputs // specialArgs // {username = "jmcelroy"; };
+          home-manager.extraSpecialArgs = inputs // specialArgs;
           home-manager.users.jmcelroy = import ./users/jmcelroy/home.nix;
-        }
-        home-manager.nixosModules.home-manager {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-
-          home-manager.extraSpecialArgs = inputs // specialArgs // {username = "jmcelroy-dev"; };
-          home-manager.users.jmcelroy = import ./users/jmcelroy-dev/home.nix;
+          home-manager.users.jmcelroy-dev = import ./users/jmcelroy-dev/home.nix;
         }
       ];
       # modules = [
