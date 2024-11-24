@@ -22,9 +22,6 @@
     # productivity
     obsidian
 
-    # IDE
-    vscode
-
     # cloud native
     docker-compose
     kubectl
