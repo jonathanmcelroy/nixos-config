@@ -97,15 +97,24 @@
 
   dconf = {
     enable = true;
-    settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
-    settings."org/gnome/shell" = {
-      disable-user-extensions = false;
-      # enabled-extensions = with pkgs.gnomeExtensions; [
-      # ];
-      disabled-extensions = [];
-      enabled-extensions = with pkgs.gnomeExtensions; [
-        system-monitor.extensionUuid
-      ];
+    settings = {
+      "org/gnome/desktop/interface" =  {
+        color-scheme = "prefer-dark";
+      };
+      "org/gnome/shell" = {
+        disable-user-extensions = false;
+        # enabled-extensions = with pkgs.gnomeExtensions; [
+        # ];
+        disabled-extensions = [];
+        enabled-extensions = with pkgs.gnomeExtensions; [
+          system-monitor.extensionUuid
+        ];
+        favorite-apps = [
+          "firefox.desktop"
+          "code.desktop"
+          "org.gnome.Console.desktop"
+        ];
+      };
     };
   };
 }
