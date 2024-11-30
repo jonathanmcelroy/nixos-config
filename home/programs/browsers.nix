@@ -45,6 +45,7 @@
         OverrideFirstRunPage = "";
         OverridePostUpdatePage = "";
         DontCheckDefaultBrowser = true;
+        OfferToSaveLogins = false;
 
         SearchSuggestionsEnabled = true;
         SearchEngines.Default = "DuckDuckGo";
