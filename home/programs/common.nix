@@ -115,9 +115,9 @@
           "org.gnome.Console.desktop"
         ];
       };
-      "/org/gnome/settings-daemon/plugins/power/" = {
+      "org/gnome/settings-daemon/plugins/power" = {
         sleep-inactive-ac-type = "nothing";
-      }
+      };
     };
   };
 }
