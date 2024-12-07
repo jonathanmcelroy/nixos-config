@@ -23,11 +23,14 @@
         bbenoist.nix
         rust-lang.rust-analyzer
         mkhl.direnv
+        gitlab.gitlab-workflow
       ];
 
       userSettings = {
+        editor.formatOnSave = true;
         git.confirmSync = false;
         window.titleBarStyle = "custom";
+        editor.rulers = [ 80 120];
       };
     };
   };
