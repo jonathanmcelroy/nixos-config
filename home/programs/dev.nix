@@ -22,6 +22,7 @@
         vscodevim.vim
         bbenoist.nix
         rust-lang.rust-analyzer
+        mkhl.direnv
       ];
 
       userSettings = {
