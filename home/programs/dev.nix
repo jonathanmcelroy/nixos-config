@@ -3,6 +3,7 @@
   config,
   ...
 }: {
+  
   programs = {
     git = {
       enable = true;
@@ -17,9 +18,10 @@
       enableExtensionUpdateCheck = false;
       mutableExtensionsDir = false;
 
-      extensions = [
-        pkgs.vscode-extensions.vscodevim.vim
-        pkgs.vscode-extensions.bbenoist.nix
+      extensions = with pkgs.vscode-extensions; [
+        vscodevim.vim
+        bbenoist.nix
+        rust-lang.rust-analyzer
       ];
 
       userSettings = {
