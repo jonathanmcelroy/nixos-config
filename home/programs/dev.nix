@@ -24,6 +24,8 @@
         rust-lang.rust-analyzer
         mkhl.direnv
         gitlab.gitlab-workflow
+        github.copilot
+        github.copilot-chat
       ];
 
       userSettings = {
