@@ -62,6 +62,18 @@
         #   }
         # ]) usernames;
       };
+      remote = let
+        usernames = [
+          "jmcelroy-remote"
+        ];
+        specialArgs = {inherit usernames;};
+      in nixpkgs.lib.nixosSystem {
+        inherit specialArgs;
+        modules = [
+          ./hosts/remote/configuration.nix
+          # ./users/jmcelroy-remote/nixos.nix
+        ];
+      };
       work = let
         usernames = [
           "jmcelroy-dev"
