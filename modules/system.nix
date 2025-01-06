@@ -72,4 +72,5 @@
     #media-session.enable = true;
   };
 
+  programs.dconf.enable = true;
 }
