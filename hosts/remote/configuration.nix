@@ -27,14 +27,6 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.jmcelroy-remote = {
-    isNormalUser = true;
-    description = "Jonathan McElroy";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
-  };
-
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
