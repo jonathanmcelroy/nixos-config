@@ -65,13 +65,21 @@
       remote = let
         usernames = [
           "jmcelroy-remote"
+          "jmcelroy-dev"
         ];
         specialArgs = {inherit usernames;};
       in nixpkgs.lib.nixosSystem {
         inherit specialArgs;
         modules = [
           ./hosts/remote/configuration.nix
-          # ./users/jmcelroy-remote/nixos.nix
+          ./users/jmcelroy-dev/nixos.nix
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+
+            home-manager.extraSpecialArgs = inputs // specialArgs;
+            home-manager.users.jmcelroy-dev = import ./users/jmcelroy-dev/home.nix;
+          }
         ];
       };
       work = let
