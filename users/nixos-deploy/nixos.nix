@@ -7,14 +7,10 @@
   #
   ##################################################################################################################
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowUnfreePredicate = _: true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.jmcelroy-dev = {
+  # Define the user for deploying nixos configuration
+  users.users.nixos-deploy = {
     isNormalUser = true;
-    description = "Jonathan's Dev User";
+    description = "Nixos Deploy User";
     extraGroups = [ "networkmanager" "wheel" ];
     openssh.authorizedKeys.keys = pubKeys;
   };

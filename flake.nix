@@ -26,14 +26,20 @@
     home-manager,
     nixos-wsl,
     ...
-  }: {
+  }: let 
+    globalArgs = {
+      pubKeys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICYti//MUvKXwG0Lo3+40GnwDxxrEDtnIAEQ+HdhBX4i jmcelroy-dev@jmcelroy-home"
+      ];
+    };
+  in {
     nixosConfigurations = {
       default = let 
         usernames = [
           "jmcelroy"
           "jmcelroy-dev"
         ];
-        specialArgs = {inherit usernames;};
+        specialArgs = {inherit usernames;} // globalArgs;
       in nixpkgs.lib.nixosSystem {
         inherit specialArgs;
         modules = [
@@ -66,13 +72,15 @@
         usernames = [
           "jmcelroy-remote"
           "jmcelroy-dev"
+          "nixos-deploy"
         ];
-        specialArgs = {inherit usernames;};
+        specialArgs = {inherit usernames;} // globalArgs;
       in nixpkgs.lib.nixosSystem {
         inherit specialArgs;
         modules = [
           ./hosts/remote/configuration.nix
           ./users/jmcelroy-dev/nixos.nix
+          ./users/nixos-deploy/nixos.nix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -86,7 +94,7 @@
         usernames = [
           "jmcelroy-dev"
         ];
-        specialArgs = {inherit usernames;};
+        specialArgs = {inherit usernames;} // globalArgs;
       in nixpkgs.lib.nixosSystem {
         inherit specialArgs;
         modules = [
