@@ -15,4 +15,15 @@
     openssh.authorizedKeys.keys = pubKeys;
   };
 
+  # nixos-deploy should never require a password with sudo
+  security.sudo.extraRules = [
+    {
+        users = [ "nixos-deploy" ];
+        commands = [{
+            command = "ALL";
+            options = ["SETENV" "NOPASSWD"];
+        }];
+    }
+  ];
+
 }
