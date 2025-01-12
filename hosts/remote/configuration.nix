@@ -17,7 +17,23 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "jmcelroy-remote"; # Define your hostname.
+  networking.hostName = "jmcelroy-remote";
+  #   networkmanager.enable = true;
+  # };
+  systemd.network = {
+    enable = true;
+    networks."10-lan" = {
+      matchConfig.name = "enp1s0";
+      address = [
+        "192.168.0.101/24"
+      ];
+      routes = [
+        { Gateway = "192.168.0.1"; }
+      ];
+      linkConfig.RequiredForOnline = "routable";
+      # networkConfig.DHCP = "ipv4";
+    };
+  };
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -25,7 +41,6 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
-  networking.networkmanager.enable = true;
 
   # Enable the OpenSSH daemon.
   services.openssh = {
@@ -38,6 +53,14 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
+  # services.github-runners.runner1 = {
+  #   enable = true;
+  #   url = "https://github.com/jonathanmcelroy/nixos-config";
+  #   user = "github-runner";
+  #   group = "github-runner";
+  #   tokenFile = "/etc/github-runner/token";
+  # };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
