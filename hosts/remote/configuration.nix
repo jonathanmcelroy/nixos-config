@@ -18,8 +18,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "jmcelroy-remote";
-  #   networkmanager.enable = true;
-  # };
   systemd.network = {
     enable = true;
     networks."10-lan" = {
@@ -45,7 +43,7 @@
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
-    passwordAuthentication = false;
+    settings.PasswordAuthentication = false;
   };
 
   # Open ports in the firewall.
