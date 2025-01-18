@@ -18,6 +18,13 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "jmcelroy-remote";
+  networking.wireless = {
+    enable = true;
+    secretsFile = "/etc/nix_wireless.conf";
+    networks.TP-Link_FA99 = {
+      pskRaw = "ext:psk_home_tplink";
+    };
+  };
   systemd.network = {
     enable = true;
     networks."10-lan" = {
