@@ -19,6 +19,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "jmcelroy-remote";
+  networking.useNetworkd = true;
   networking.wireless = {
     enable = true;
     secretsFile = "/etc/nix_wireless.conf";
@@ -26,21 +27,6 @@
       pskRaw = "ext:psk_home_tplink";
     };
   };
-  systemd.network = {
-    enable = true;
-    networks."10-lan" = {
-      matchConfig.name = "enp1s0";
-      address = [
-        "192.168.0.101/24"
-      ];
-      routes = [
-        { Gateway = "192.168.0.1"; }
-      ];
-      linkConfig.RequiredForOnline = "routable";
-      # networkConfig.DHCP = "ipv4";
-    };
-  };
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
