@@ -46,13 +46,20 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  # services.github-runners.runner1 = {
-  #   enable = true;
-  #   url = "https://github.com/jonathanmcelroy/nixos-config";
-  #   user = "github-runner";
-  #   group = "github-runner";
-  #   tokenFile = "/etc/github-runner/token";
-  # };
+  # Define the user for deploying nixos configuration
+  users.users.github-runner = {
+    isSystemUser = true;
+    description = "Github runner";
+    group = "github-runner";
+  };
+  users.groups.github-runner = {};
+  services.github-runners.runner1 = {
+    enable = true;
+    url = "https://github.com/jonathanmcelroy/nixos-config";
+    user = "github-runner";
+    group = "github-runner";
+    tokenFile = "/etc/github-runner/token";
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
