@@ -25,7 +25,5 @@
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
     };
-
-    dconf.enable = true;
   };
 }
