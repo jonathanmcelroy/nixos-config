@@ -102,9 +102,12 @@
           {
             system.stateVersion = "24.05";
             wsl.enable = true;
+            nixpkgs.hostPlatform = nixpkgs.lib.mkDefault "x86_64-linux";
           }
         ];
       };
     };
+
+    checks.x86_64-linux.bootTest = import ./tests/boot-test.nix { pkgs = import nixpkgs { system = "x86_64-linux"; }; };
   };
 }
