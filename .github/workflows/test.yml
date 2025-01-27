@@ -1,0 +1,16 @@
+name: Nix Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  nix-check:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run Nix Check
+      run: nix flake check
