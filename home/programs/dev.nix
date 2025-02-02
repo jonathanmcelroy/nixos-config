@@ -26,6 +26,7 @@
         gitlab.gitlab-workflow
         github.copilot
         github.copilot-chat
+        github.vscode-github-actions
       ];
 
       userSettings = {
