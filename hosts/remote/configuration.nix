@@ -9,10 +9,13 @@
     [ 
       ../../modules/system.nix
       ../../modules/network_access.nix
-      
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+
+      ../../users/jmcelroy-dev/nixos.nix
+      ../../users/nixos-deploy/nixos.nix
     ];
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;

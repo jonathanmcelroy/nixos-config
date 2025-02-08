@@ -8,7 +8,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
 
     # We use the unstable nixpkgs repo for some packages.
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     # Build a custom WSL installer
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
@@ -26,27 +26,21 @@
     home-manager,
     nixos-wsl,
     ...
-  }: let 
-    globalArgs = {
-      pubKeys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICYti//MUvKXwG0Lo3+40GnwDxxrEDtnIAEQ+HdhBX4i jmcelroy-dev@jmcelroy-home"
-      ];
-    };
-  in {
+  }: {
     nixosConfigurations = {
       default = let 
         usernames = [
           "jmcelroy"
           "jmcelroy-dev"
         ];
-        specialArgs = {inherit usernames;} // globalArgs;
+        specialArgs = {inherit usernames;};
       in nixpkgs.lib.nixosSystem {
         inherit specialArgs;
         modules = [
           ./hosts/default/configuration.nix
           ./users/jmcelroy/nixos.nix
           ./users/jmcelroy-dev/nixos.nix
-          home-manager.nixosModules.home-manager {
+          {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
 
@@ -54,6 +48,7 @@
             home-manager.users.jmcelroy = import ./users/jmcelroy/home.nix;
             home-manager.users.jmcelroy-dev = import ./users/jmcelroy-dev/home.nix;
           }
+          home-manager.nixosModules.home-manager 
         ];
         # modules = [
         #   ./hosts/default/configuration.nix
@@ -74,27 +69,20 @@
           "jmcelroy-dev"
           "nixos-deploy"
         ];
-        specialArgs = {inherit usernames;} // globalArgs;
+        specialArgs = {inherit usernames;};
       in nixpkgs.lib.nixosSystem {
         inherit specialArgs;
         modules = [
+          home-manager.nixosModules.home-manager
           ./hosts/remote/configuration.nix
-          ./users/jmcelroy-dev/nixos.nix
-          ./users/nixos-deploy/nixos.nix
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-
-            home-manager.extraSpecialArgs = inputs // specialArgs;
-            home-manager.users.jmcelroy-dev = import ./users/jmcelroy-dev/home.nix;
-          }
+          ./hosts/remote/hardware-configuration.nix
         ];
       };
       work = let
         usernames = [
           "jmcelroy-dev"
         ];
-        specialArgs = {inherit usernames;} // globalArgs;
+        specialArgs = {inherit usernames;};
       in nixpkgs.lib.nixosSystem {
         inherit specialArgs;
         modules = [
@@ -108,6 +96,10 @@
       };
     };
 
-    checks.x86_64-linux.bootTest = import ./tests/boot-test.nix { pkgs = import nixpkgs { system = "x86_64-linux"; }; };
+    # checks.x86_64-linux.bootTest = import ./tests/boot-test.nix { pkgs = import nixpkgs { system = "x86_64-linux"; }; };
+    checks.x86_64-linux.remoteTest = import ./tests/remote-test.nix {
+      pkgs = import nixpkgs { system = "x86_64-linux"; };
+      inherit home-manager;
+    };
   };
 }
