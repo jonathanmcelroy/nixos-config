@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, ... }:
+{ config, pkgs, ... }:
 
 {
   imports =
@@ -12,6 +12,7 @@
 
       ../../users/jmcelroy-dev/nixos.nix
       ../../users/nixos-deploy/nixos.nix
+      ../../users/github-runner/nixos.nix
     ];
 
   home-manager.useGlobalPkgs = true;
@@ -48,21 +49,6 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-
-  # Define the user for deploying nixos configuration
-  users.users.github-runner = {
-    isSystemUser = true;
-    description = "Github runner";
-    group = "github-runner";
-  };
-  users.groups.github-runner = {};
-  services.github-runners.runner1 = {
-    enable = true;
-    url = "https://github.com/jonathanmcelroy/nixos-config";
-    user = "github-runner";
-    group = "github-runner";
-    tokenFile = "/etc/github-runner/token";
-  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
