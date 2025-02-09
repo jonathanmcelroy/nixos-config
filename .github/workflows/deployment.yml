@@ -24,11 +24,11 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
     
-    - name: Deploy to remote
+    - name: Deploy to server1
       env:
         SSH_KEY_PASSWORD: ${{ secrets.SSH_KEY_PASSWORD }}  
       run: |
         eval "$(ssh-agent -s)"
         echo "$SSH_KEY_PASSWORD" | ssh-add ssh/id_rsa
-        nixos-rebuild switch --flake '.#remote' --target-host nixos-deploy@jmcelroy-remote --use-remote-sudo --show-trace --print-build-logs --verbose;
+        nixos-rebuild switch --flake '.#server1' --target-host nixos-deploy@server1 --use-remote-sudo --show-trace --print-build-logs --verbose;
         ssh-agent -k
