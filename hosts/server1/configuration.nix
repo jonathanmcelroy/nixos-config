@@ -22,7 +22,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "jmcelroy-remote";
+  networking.hostName = "server1";
   networking.useNetworkd = true;
   networking.wireless = {
     enable = true;

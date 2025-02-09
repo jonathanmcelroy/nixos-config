@@ -26,7 +26,25 @@
     home-manager,
     nixos-wsl,
     ...
-  }: {
+  }: let 
+    system = "x86_64-linux";
+    pkgs = import nixpkgs { inherit system; };
+  in {
+    packages.${system}.deploy = pkgs.writeShellScriptBin "deploy" ''
+      #!${pkgs.bash}/bin/bash
+      set -euo pipefail
+
+      # Ensure that the host is provided
+      if [ "$#" -ne 1 ]; then
+        echo "Usage: deploy <host>"
+        exit 1
+      fi
+
+      host=$1
+
+      nixos-rebuild switch --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
+    '';
+
     nixosConfigurations = {
       default = let 
         usernames = [
@@ -63,7 +81,7 @@
         #   }
         # ]) usernames;
       };
-      remote = let
+      server1 = let
         usernames = [
           "jmcelroy-remote"
           "jmcelroy-dev"
@@ -74,8 +92,8 @@
         inherit specialArgs;
         modules = [
           home-manager.nixosModules.home-manager
-          ./hosts/remote/configuration.nix
-          ./hosts/remote/hardware-configuration.nix
+          ./hosts/server1/configuration.nix
+          ./hosts/server1/hardware-configuration.nix
         ];
       };
       work = let
@@ -97,9 +115,7 @@
     };
 
     # checks.x86_64-linux.bootTest = import ./tests/boot-test.nix { pkgs = import nixpkgs { system = "x86_64-linux"; }; };
-    checks.x86_64-linux.remoteTest = import ./tests/remote-test.nix {
-      pkgs = import nixpkgs { system = "x86_64-linux"; };
-      inherit home-manager;
-    };
+    checks.x86_64-linux.server1Test = import ./tests/server1-test.nix { inherit pkgs home-manager; };
+    checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
   };
 }
