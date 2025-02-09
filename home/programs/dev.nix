@@ -31,10 +31,16 @@
       ];
 
       userSettings = {
-        editor.formatOnSave = true;
+        editor = {
+          formatOnSave = true;
+          rulers = [ 80 120];
+          tabCompletion = "on";
+        };
         git.confirmSync = false;
         window.titleBarStyle = "custom";
-        editor.rulers = [ 80 120];
+        github.copilot.enable = {
+          markdown = true;
+        };
       };
     };
   };
