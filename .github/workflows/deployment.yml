@@ -15,5 +15,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Set up SSH key
+      run: |
+        mkdir -p ssh
+        echo "$SSH_KEY" > ssh/id_rsa
+        chmod 600 ssh/id_rsa
+      env:
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+    
     - name: Deploy to remote
-      run: nixos-rebuild switch --flake '.#remote' --target-host nixos-deploy@jmcelroy-remote --use-remote-sudo --show-trace --print-build-logs --verbose;
+      env:
+        SSH_KEY_PASSWORD: ${{ secrets.SSH_KEY_PASSWORD }}  
+      run:
+        eval "$(ssh-agent -s)"
+        echo "$SSH_KEY_PASSWORD" | ssh-add ssh/id_rsa
+        nixos-rebuild switch --flake '.#remote' --target-host nixos-deploy@jmcelroy-remote --use-remote-sudo --show-trace --print-build-logs --verbose;
+        ssh-agent -k
