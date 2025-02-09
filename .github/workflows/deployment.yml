@@ -1,0 +1,19 @@
+name: Production deployment
+
+concurrency: production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deployment:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Deploy to remote
+      run: nixos-rebuild switch --flake '.#remote' --target-host nixos-deploy@jmcelroy-remote --use-remote-sudo --show-trace --print-build-logs --verbose;
