@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, pubKeys, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   ##################################################################################################################
@@ -12,7 +12,7 @@
     isNormalUser = true;
     description = "Nixos Deploy User";
     extraGroups = [ "networkmanager" "wheel" ];
-    openssh.authorizedKeys.keys = pubKeys;
+    openssh.authorizedKeys.keys = import ../../public-keys.nix;
   };
 
   # nixos-deploy should never require a password with sudo

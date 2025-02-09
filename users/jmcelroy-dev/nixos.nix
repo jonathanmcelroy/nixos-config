@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, pubKeys, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   ##################################################################################################################
@@ -16,7 +16,7 @@
     isNormalUser = true;
     description = "Jonathan's Dev User";
     extraGroups = [ "networkmanager" "wheel" ];
-    openssh.authorizedKeys.keys = pubKeys;
+    openssh.authorizedKeys.keys = import ../../public-keys.nix;
   };
-
+  home-manager.users.jmcelroy-dev = import ./home.nix;
 }
