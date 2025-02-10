@@ -22,13 +22,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "server1";
-  networking.useNetworkd = true;
-  networking.wireless = {
-    enable = true;
-    secretsFile = "/etc/nix_wireless.conf";
-    networks.TP-Link_FA99 = {
-      pskRaw = "ext:psk_home_tplink";
+  networking = {
+    hostName = "server1";
+    useNetworkd = true;
+    wireless = {
+      enable = true;
+      secretsFile = "/etc/nix_wireless.conf";
+      networks.TP-Link_FA99 = {
+        pskRaw = "ext:psk_home_tplink";
+      };
     };
   };
 
