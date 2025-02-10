@@ -1,9 +1,18 @@
-{ pkgs, lib, usernames, ... }: {
+{
+  pkgs,
+  lib,
+  usernames,
+  ...
+}:
+{
 
   nix.settings = {
     trusted-users = usernames;
 
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
   };
 
   # do garbage collection weekly to keep disk usage low
@@ -39,7 +48,6 @@
     layout = "us";
     variant = "";
   };
-
 
   # Enable CUPS to print documents.
   services.printing.enable = true;

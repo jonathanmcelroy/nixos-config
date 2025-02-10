@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   # The user for all github runner related stuff
 
   users.users.github-runner = {
@@ -6,7 +7,7 @@
     description = "Github runner";
     group = "github-runner";
   };
-  users.groups.github-runner = {};
+  users.groups.github-runner = { };
 
   services.github-runners.runner1 = {
     enable = true;
@@ -14,7 +15,7 @@
     user = "github-runner";
     group = "github-runner";
     tokenFile = "/etc/github-runner/token";
-    extraPackages = with pkgs; [ 
+    extraPackages = with pkgs; [
       nixos-rebuild
       openssh
     ];

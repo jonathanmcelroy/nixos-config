@@ -5,16 +5,15 @@
 { config, ... }:
 
 {
-  imports =
-    [ 
-      ../../modules/system.nix
-      ../../modules/gnome.nix
-      ../../modules/network_access.nix
+  imports = [
+    ../../modules/system.nix
+    ../../modules/gnome.nix
+    ../../modules/network_access.nix
 
-      ../../users/jmcelroy/nixos.nix
-      ../../users/jmcelroy-dev/nixos.nix
-      ../../users/nixos-deploy/nixos.nix
-    ];
+    ../../users/jmcelroy/nixos.nix
+    ../../users/jmcelroy-dev/nixos.nix
+    ../../users/nixos-deploy/nixos.nix
+  ];
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
@@ -25,7 +24,7 @@
   boot.loader.grub.useOSProber = true;
 
   networking = {
-    hostName = "jmcelroy-home"; 
+    hostName = "jmcelroy-home";
     networkmanager.enable = true;
   };
 
