@@ -1,13 +1,15 @@
 {
+  osConfig,
   pkgs,
   lib,
-  usernames,
   ...
 }:
 {
 
   nix.settings = {
-    trusted-users = usernames;
+    trusted-users = [
+      "@wheel"
+    ];
 
     experimental-features = [
       "nix-command"
