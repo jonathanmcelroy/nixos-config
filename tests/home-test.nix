@@ -9,13 +9,12 @@
     nodes.remote = inputs: {
         imports = [
             home-manager.nixosModules.home-manager
-            ../hosts/server1/configuration.nix
+            ../hosts/jmcelroy-home/configuration.nix
         ];
     };
 
     testScript = ''
-        user = "jmcelroy-dev";
         machine.wait_for_unit("default.target")
-        machine.succeed(f"su -- {user} -c 'which bash'")
+        machine.succeed("su -- jmcelroy -c 'which bash'")
     '';
 }

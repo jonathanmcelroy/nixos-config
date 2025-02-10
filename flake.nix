@@ -46,7 +46,7 @@
     '';
 
     nixosConfigurations = {
-      default = let 
+      jmcelroy-home = let 
         usernames = [
           "jmcelroy"
           "jmcelroy-dev"
@@ -55,31 +55,10 @@
       in nixpkgs.lib.nixosSystem {
         inherit specialArgs;
         modules = [
-          ./hosts/default/configuration.nix
-          ./users/jmcelroy/nixos.nix
-          ./users/jmcelroy-dev/nixos.nix
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-
-            home-manager.extraSpecialArgs = inputs // specialArgs;
-            home-manager.users.jmcelroy = import ./users/jmcelroy/home.nix;
-            home-manager.users.jmcelroy-dev = import ./users/jmcelroy-dev/home.nix;
-          }
           home-manager.nixosModules.home-manager 
+          ./hosts/jmcelroy-home/configuration.nix
+          ./hosts/jmcelroy-home/hardware-configuration.nix
         ];
-        # modules = [
-        #   ./hosts/default/configuration.nix
-        # ] ++ builtins.concatMap (username: [
-        #   ./users/${username}/nixos.nix
-        #   home-manager.nixosModules.home-manager {
-        #     home-manager.useGlobalPkgs = true;
-        #     home-manager.useUserPackages = true;
-
-        #     home-manager.extraSpecialArgs = inputs // specialArgs // {inherit username; };
-        #     home-manager.users.${username} = import ./users/${username}/home.nix;
-        #   }
-        # ]) usernames;
       };
       server1 = let
         usernames = [
@@ -114,7 +93,6 @@
       };
     };
 
-    # checks.x86_64-linux.bootTest = import ./tests/boot-test.nix { pkgs = import nixpkgs { system = "x86_64-linux"; }; };
     checks.x86_64-linux.server1Test = import ./tests/server1-test.nix { inherit pkgs home-manager; };
     checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
   };
