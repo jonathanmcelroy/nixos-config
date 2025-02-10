@@ -17,6 +17,7 @@
     description = "Jonathan's Home User";
     extraGroups = [ "networkmanager" "wheel" ];
   };
+  home-manager.users.jmcelroy = import ./home.nix;
 
   # Install Steam
   programs = {

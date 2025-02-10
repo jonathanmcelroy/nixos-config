@@ -6,14 +6,14 @@ This reposotory is to store my configuration-as-code for all my machines.  It us
 Usage
 -----
 
-To test the configuration for the default system, run the following command:
+To test the configuration for the jmcelroy-home system, run the following command:
 ```bash
-sudo nixos-rebuild test --flake '/usr/local/src/nixos-configuration#default' --show-trace --print-build-logs --verbose
+sudo nixos-rebuild test --flake '/usr/local/src/nixos-configuration#jmcelroy-home' --show-trace --print-build-logs --verbose
 ```
 
-To install the configuration for the default system, run the following command:
+To install the configuration for the jmcelroy-home system, run the following command:
 ```bash
-sudo nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#default' --show-trace --print-build-logs --verbose
+sudo nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#jmcelroy-home' --show-trace --print-build-logs --verbose
 ```
 
 Architecture
