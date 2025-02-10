@@ -1,6 +1,5 @@
+{ ... }:
 {
-  ...
-}: {
   # Make firefox the default browser
   xdg.mimeApps = {
     enable = true;
@@ -20,7 +19,7 @@
   programs = {
     chromium = {
       enable = true;
-      commandLineArgs = ["--enable-features=TouchpadOverscrollHistoryNavigation"];
+      commandLineArgs = [ "--enable-features=TouchpadOverscrollHistoryNavigation" ];
       extensions = [
         # {id = "";}  // extension id, query from chrome web store
       ];
@@ -33,7 +32,7 @@
         DisableTelemetry = true;
         DisableFirefoxStudies = true;
         EnableTrackingProtection = {
-          Value= true;
+          Value = true;
           Locked = true;
           Cryptomining = true;
           Fingerprinting = true;
@@ -50,7 +49,7 @@
         SearchSuggestionsEnabled = true;
         SearchEngines.Default = "DuckDuckGo";
 
-        /* ---- EXTENSIONS ---- */
+        # ---- EXTENSIONS ----
         # Check about:support for extension/add-on ID strings.
         # Valid strings for installation_mode are "allowed", "blocked",
         # "force_installed" and "normal_installed".
@@ -73,45 +72,47 @@
           };
         };
 
-        /* ---- PREFERENCES ---- */
+        # ---- PREFERENCES ----
         # Check about:config for options.
-        Preferences = let
-          lock-false = {
-            Value = false;
-            Status = "locked";
+        Preferences =
+          let
+            lock-false = {
+              Value = false;
+              Status = "locked";
+            };
+            lock-true = {
+              Value = true;
+              Status = "locked";
+            };
+          in
+          {
+            "browser.contentblocking.category" = {
+              Value = "strict";
+              Status = "locked";
+            };
+            "extensions.pocket.enabled" = lock-false;
+            "extensions.screenshots.disabled" = lock-true;
+            "browser.topsites.contile.enabled" = lock-false;
+            "browser.formfill.enable" = lock-false;
+            "browser.search.suggest.enabled" = lock-false;
+            "browser.search.suggest.enabled.private" = lock-false;
+            "browser.urlbar.suggest.searches" = lock-false;
+            "browser.urlbar.showSearchSuggestionsFirst" = lock-false;
+            "browser.newtabpage.activity-stream.feeds.section.topstories" = lock-false;
+            "browser.newtabpage.activity-stream.feeds.snippets" = lock-false;
+            "browser.newtabpage.activity-stream.section.highlights.includePocket" = lock-false;
+            "browser.newtabpage.activity-stream.section.highlights.includeBookmarks" = lock-false;
+            "browser.newtabpage.activity-stream.section.highlights.includeDownloads" = lock-false;
+            "browser.newtabpage.activity-stream.section.highlights.includeVisited" = lock-false;
+            "browser.newtabpage.activity-stream.showSponsored" = lock-false;
+            "browser.newtabpage.activity-stream.system.showSponsored" = lock-false;
+            "browser.newtabpage.activity-stream.showSearch" = lock-false;
+            "browser.newtabpage.activity-stream.showSponsoredTopSites" = lock-false;
+            "browser.newtabpage.activity-stream.showWeather" = lock-false;
+            "browser.newtabpage.activity-stream.system.showWeather" = lock-false;
+            "browser.newtabpage.activity-stream.feeds.topsites" = lock-false;
           };
-          lock-true = {
-            Value = true;
-            Status = "locked";
-          };
-        in { 
-          "browser.contentblocking.category" = { Value = "strict"; Status = "locked"; };
-          "extensions.pocket.enabled" = lock-false;
-          "extensions.screenshots.disabled" = lock-true;
-          "browser.topsites.contile.enabled" = lock-false;
-          "browser.formfill.enable" = lock-false;
-          "browser.search.suggest.enabled" = lock-false;
-          "browser.search.suggest.enabled.private" = lock-false;
-          "browser.urlbar.suggest.searches" = lock-false;
-          "browser.urlbar.showSearchSuggestionsFirst" = lock-false;
-          "browser.newtabpage.activity-stream.feeds.section.topstories" = lock-false;
-          "browser.newtabpage.activity-stream.feeds.snippets" = lock-false;
-          "browser.newtabpage.activity-stream.section.highlights.includePocket" = lock-false;
-          "browser.newtabpage.activity-stream.section.highlights.includeBookmarks" = lock-false;
-          "browser.newtabpage.activity-stream.section.highlights.includeDownloads" = lock-false;
-          "browser.newtabpage.activity-stream.section.highlights.includeVisited" = lock-false;
-          "browser.newtabpage.activity-stream.showSponsored" = lock-false;
-          "browser.newtabpage.activity-stream.system.showSponsored" = lock-false;
-          "browser.newtabpage.activity-stream.showSearch" = lock-false;
-          "browser.newtabpage.activity-stream.showSponsoredTopSites" = lock-false;
-          "browser.newtabpage.activity-stream.showWeather" = lock-false;
-          "browser.newtabpage.activity-stream.system.showWeather" = lock-false;
-          "browser.newtabpage.activity-stream.feeds.topsites" = lock-false;
-        };
       };
-
-    
-
 
       # profiles.dev = {
       #   extensions = [

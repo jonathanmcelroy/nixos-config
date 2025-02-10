@@ -5,15 +5,14 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ 
-      ../../modules/system.nix
-      ../../modules/network_access.nix
+  imports = [
+    ../../modules/system.nix
+    ../../modules/network_access.nix
 
-      ../../users/jmcelroy-dev/nixos.nix
-      ../../users/nixos-deploy/nixos.nix
-      ../../users/github-runner/nixos.nix
-    ];
+    ../../users/jmcelroy-dev/nixos.nix
+    ../../users/nixos-deploy/nixos.nix
+    ../../users/github-runner/nixos.nix
+  ];
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;

@@ -1,12 +1,14 @@
-{config, osConfig, ...}: let
+{ config, osConfig, ... }:
+let
   d = config.xdg.dataHome;
   c = config.xdg.configHome;
   cache = config.xdg.cacheHome;
-in {
+in
+{
   imports = [
-  #   ./nushell
-  #   ./common.nix
-  #   ./starship.nix
+    #   ./nushell
+    #   ./common.nix
+    #   ./starship.nix
     ./terminals.nix
   ];
 
