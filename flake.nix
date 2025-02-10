@@ -51,57 +51,30 @@
       formatter.${system} = pkgs.nixfmt-rfc-style;
 
       nixosConfigurations = {
-        jmcelroy-home =
-          let
-            usernames = [
-              "jmcelroy"
-              "jmcelroy-dev"
-            ];
-            specialArgs = { inherit usernames; };
-          in
-          nixpkgs.lib.nixosSystem {
-            inherit specialArgs;
-            modules = [
-              home-manager.nixosModules.home-manager
-              ./hosts/jmcelroy-home/configuration.nix
-              ./hosts/jmcelroy-home/hardware-configuration.nix
-            ];
-          };
-        server1 =
-          let
-            usernames = [
-              "jmcelroy-remote"
-              "jmcelroy-dev"
-              "nixos-deploy"
-            ];
-            specialArgs = { inherit usernames; };
-          in
-          nixpkgs.lib.nixosSystem {
-            inherit specialArgs;
-            modules = [
-              home-manager.nixosModules.home-manager
-              ./hosts/server1/configuration.nix
-              ./hosts/server1/hardware-configuration.nix
-            ];
-          };
-        work =
-          let
-            usernames = [
-              "jmcelroy-dev"
-            ];
-            specialArgs = { inherit usernames; };
-          in
-          nixpkgs.lib.nixosSystem {
-            inherit specialArgs;
-            modules = [
-              nixos-wsl.nixosModules.default
-              {
-                system.stateVersion = "24.05";
-                wsl.enable = true;
-                nixpkgs.hostPlatform = nixpkgs.lib.mkDefault "x86_64-linux";
-              }
-            ];
-          };
+        jmcelroy-home = nixpkgs.lib.nixosSystem {
+          modules = [
+            home-manager.nixosModules.home-manager
+            ./hosts/jmcelroy-home/configuration.nix
+            ./hosts/jmcelroy-home/hardware-configuration.nix
+          ];
+        };
+        server1 = nixpkgs.lib.nixosSystem {
+          modules = [
+            home-manager.nixosModules.home-manager
+            ./hosts/server1/configuration.nix
+            ./hosts/server1/hardware-configuration.nix
+          ];
+        };
+        work = nixpkgs.lib.nixosSystem {
+          modules = [
+            nixos-wsl.nixosModules.default
+            {
+              system.stateVersion = "24.05";
+              wsl.enable = true;
+              nixpkgs.hostPlatform = nixpkgs.lib.mkDefault "x86_64-linux";
+            }
+          ];
+        };
       };
 
       checks.x86_64-linux.server1Test = import ./tests/server1-test.nix { inherit pkgs home-manager; };
