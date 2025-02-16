@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   home.packages = with pkgs; [
     # archives
     zip
@@ -76,7 +77,6 @@
         "custom-config"
       ];
     };
-    
 
     skim = {
       enable = true;
@@ -98,14 +98,14 @@
   dconf = {
     enable = true;
     settings = {
-      "org/gnome/desktop/interface" =  {
+      "org/gnome/desktop/interface" = {
         color-scheme = "prefer-dark";
       };
       "org/gnome/shell" = {
         disable-user-extensions = false;
         # enabled-extensions = with pkgs.gnomeExtensions; [
         # ];
-        disabled-extensions = [];
+        disabled-extensions = [ ];
         enabled-extensions = with pkgs.gnomeExtensions; [
           system-monitor.extensionUuid
         ];

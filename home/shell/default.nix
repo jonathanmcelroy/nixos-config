@@ -1,12 +1,14 @@
-{config, ...}: let
+{ config, osConfig, ... }:
+let
   d = config.xdg.dataHome;
   c = config.xdg.configHome;
   cache = config.xdg.cacheHome;
-in {
+in
+{
   imports = [
-  #   ./nushell
-  #   ./common.nix
-  #   ./starship.nix
+    #   ./nushell
+    #   ./common.nix
+    #   ./starship.nix
     ./terminals.nix
   ];
 
@@ -20,9 +22,9 @@ in {
   };
 
   home.shellAliases = {
-    jmc-nixos-rebuild = "sudo nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#default' --show-trace --print-build-logs --verbose";
-    jmc-nixos-deploy-remote = "nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#remote' --target-host nixos-deploy@jmcelroy-remote --use-remote-sudo --show-trace --print-build-logs --verbose";
-    jmc-nixos-test = "sudo nixos-rebuild test --flake '/usr/local/src/nixos-configuration#default' --show-trace --print-build-logs --verbose";
+    jmc-nixos-rebuild = "sudo nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#${osConfig.networking.hostName}' --show-trace --print-build-logs --verbose";
+    jmc-nixos-deploy-remote = "nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#server1' --target-host nixos-deploy@server1 --use-remote-sudo --show-trace --print-build-logs --verbose";
+    jmc-nixos-test = "sudo nixos-rebuild test --flake '/usr/local/src/nixos-configuration#${osConfig.networking.hostName}' --show-trace --print-build-logs --verbose";
     jmc-nixos-edit = "code /usr/local/src/nixos-configuration";
 
     # k = "kubectl";

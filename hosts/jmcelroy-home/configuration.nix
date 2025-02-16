@@ -5,15 +5,18 @@
 { config, ... }:
 
 {
-  imports =
-    [ 
-      ../../modules/system.nix
-      ../../modules/gnome.nix
-      ../../modules/network_access.nix
+  imports = [
+    ../../modules/system.nix
+    ../../modules/gnome.nix
+    ../../modules/network_access.nix
 
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+    ../../users/jmcelroy/nixos.nix
+    ../../users/jmcelroy-dev/nixos.nix
+    ../../users/nixos-deploy/nixos.nix
+  ];
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
 
   # Bootloader.
   boot.loader.grub.enable = true;
@@ -21,16 +24,8 @@
   boot.loader.grub.useOSProber = true;
 
   networking = {
-    hostName = "jmcelroy-home"; 
+    hostName = "jmcelroy-home";
     networkmanager.enable = true;
-    defaultGateway = "192.168.0.1";
-    nameservers = [ "192.168.0.1" ];
-    interfaces.enp30s0 = {
-      ipv4.addresses = [{
-        address = "192.168.0.100";
-        prefixLength = 24;
-      }];
-    };
   };
 
   hardware.graphics = {
@@ -47,6 +42,14 @@
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
+
+  # Enable the OpenSSH daemon.
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = false;
+    settings.PermitRootLogin = "no";
+    settings.AllowUsers = [ "nixos-deploy" ];
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

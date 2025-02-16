@@ -2,17 +2,17 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, ... }:
+{ config, pkgs, ... }:
 
 {
-  imports =
-    [ 
-      ../../modules/system.nix
-      ../../modules/network_access.nix
+  imports = [
+    ../../modules/system.nix
+    ../../modules/network_access.nix
 
-      ../../users/jmcelroy-dev/nixos.nix
-      ../../users/nixos-deploy/nixos.nix
-    ];
+    ../../users/jmcelroy-dev/nixos.nix
+    ../../users/nixos-deploy/nixos.nix
+    ../../users/github-runner/nixos.nix
+  ];
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
@@ -21,13 +21,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "jmcelroy-remote";
-  networking.useNetworkd = true;
-  networking.wireless = {
-    enable = true;
-    secretsFile = "/etc/nix_wireless.conf";
-    networks.TP-Link_FA99 = {
-      pskRaw = "ext:psk_home_tplink";
+  networking = {
+    hostName = "server1";
+    useNetworkd = true;
+    wireless = {
+      enable = true;
+      secretsFile = "/etc/nix_wireless.conf";
+      networks.TP-Link_FA99 = {
+        pskRaw = "ext:psk_home_tplink";
+      };
     };
   };
 
@@ -48,21 +50,6 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-
-  # Define the user for deploying nixos configuration
-  users.users.github-runner = {
-    isSystemUser = true;
-    description = "Github runner";
-    group = "github-runner";
-  };
-  users.groups.github-runner = {};
-  services.github-runners.runner1 = {
-    enable = true;
-    url = "https://github.com/jonathanmcelroy/nixos-config";
-    user = "github-runner";
-    group = "github-runner";
-    tokenFile = "/etc/github-runner/token";
-  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

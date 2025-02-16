@@ -20,86 +20,81 @@
     };
   };
 
-  outputs = inputs @ { 
-    self,
-    nixpkgs,
-    home-manager,
-    nixos-wsl,
-    ...
-  }: {
-    nixosConfigurations = {
-      default = let 
-        usernames = [
-          "jmcelroy"
-          "jmcelroy-dev"
-        ];
-        specialArgs = {inherit usernames;};
-      in nixpkgs.lib.nixosSystem {
-        inherit specialArgs;
-        modules = [
-          ./hosts/default/configuration.nix
-          ./users/jmcelroy/nixos.nix
-          ./users/jmcelroy-dev/nixos.nix
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      home-manager,
+      nixos-wsl,
+      ...
+    }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+    in
+    {
+      packages.${system} = {
+        test-deploy = pkgs.writeShellScriptBin "test-deploy" ''
+          #!${pkgs.bash}/bin/bash
+          set -euo pipefail
 
-            home-manager.extraSpecialArgs = inputs // specialArgs;
-            home-manager.users.jmcelroy = import ./users/jmcelroy/home.nix;
-            home-manager.users.jmcelroy-dev = import ./users/jmcelroy-dev/home.nix;
-          }
-          home-manager.nixosModules.home-manager 
-        ];
-        # modules = [
-        #   ./hosts/default/configuration.nix
-        # ] ++ builtins.concatMap (username: [
-        #   ./users/${username}/nixos.nix
-        #   home-manager.nixosModules.home-manager {
-        #     home-manager.useGlobalPkgs = true;
-        #     home-manager.useUserPackages = true;
+          # Ensure that the host is provided
+          if [ "$#" -ne 1 ]; then
+            echo "Usage: test_deploy <host>"
+            exit 1
+          fi
 
-        #     home-manager.extraSpecialArgs = inputs // specialArgs // {inherit username; };
-        #     home-manager.users.${username} = import ./users/${username}/home.nix;
-        #   }
-        # ]) usernames;
+          host=$1
+
+          nixos-rebuild test --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
+        '';
+
+        deploy = pkgs.writeShellScriptBin "deploy" ''
+          #!${pkgs.bash}/bin/bash
+          set -euo pipefail
+
+          # Ensure that the host is provided
+          if [ "$#" -ne 1 ]; then
+            echo "Usage: deploy <host>"
+            exit 1
+          fi
+
+          host=$1
+
+          nixos-rebuild switch --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
+        '';
       };
-      remote = let
-        usernames = [
-          "jmcelroy-remote"
-          "jmcelroy-dev"
-          "nixos-deploy"
-        ];
-        specialArgs = {inherit usernames;};
-      in nixpkgs.lib.nixosSystem {
-        inherit specialArgs;
-        modules = [
-          home-manager.nixosModules.home-manager
-          ./hosts/remote/configuration.nix
-          ./hosts/remote/hardware-configuration.nix
-        ];
+
+      formatter.${system} = pkgs.nixfmt-rfc-style;
+
+      nixosConfigurations = {
+        jmcelroy-home = nixpkgs.lib.nixosSystem {
+          modules = [
+            home-manager.nixosModules.home-manager
+            ./hosts/jmcelroy-home/configuration.nix
+            ./hosts/jmcelroy-home/hardware-configuration.nix
+          ];
+        };
+        server1 = nixpkgs.lib.nixosSystem {
+          modules = [
+            home-manager.nixosModules.home-manager
+            ./hosts/server1/configuration.nix
+            ./hosts/server1/hardware-configuration.nix
+          ];
+        };
+        work = nixpkgs.lib.nixosSystem {
+          modules = [
+            nixos-wsl.nixosModules.default
+            {
+              system.stateVersion = "24.05";
+              wsl.enable = true;
+              nixpkgs.hostPlatform = nixpkgs.lib.mkDefault "x86_64-linux";
+            }
+          ];
+        };
       };
-      work = let
-        usernames = [
-          "jmcelroy-dev"
-        ];
-        specialArgs = {inherit usernames;};
-      in nixpkgs.lib.nixosSystem {
-        inherit specialArgs;
-        modules = [
-          nixos-wsl.nixosModules.default
-          {
-            system.stateVersion = "24.05";
-            wsl.enable = true;
-            nixpkgs.hostPlatform = nixpkgs.lib.mkDefault "x86_64-linux";
-          }
-        ];
-      };
+
+      checks.x86_64-linux.server1Test = import ./tests/server1-test.nix { inherit pkgs home-manager; };
+      checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
     };
-
-    # checks.x86_64-linux.bootTest = import ./tests/boot-test.nix { pkgs = import nixpkgs { system = "x86_64-linux"; }; };
-    checks.x86_64-linux.remoteTest = import ./tests/remote-test.nix {
-      pkgs = import nixpkgs { system = "x86_64-linux"; };
-      inherit home-manager;
-    };
-  };
 }

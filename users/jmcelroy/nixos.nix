@@ -15,8 +15,12 @@
   users.users.jmcelroy = {
     isNormalUser = true;
     description = "Jonathan's Home User";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
   };
+  home-manager.users.jmcelroy = import ./home.nix;
 
   # Install Steam
   programs = {

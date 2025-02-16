@@ -2,13 +2,16 @@
   pkgs,
   config,
   ...
-}: {
-  
+}:
+{
+
   programs = {
     git = {
       enable = true;
       extraConfig = {
-        init = { defaultBranch = "main"; };
+        init = {
+          defaultBranch = "main";
+        };
       };
     };
 
@@ -33,7 +36,10 @@
       userSettings = {
         editor = {
           formatOnSave = true;
-          rulers = [ 80 120];
+          rulers = [
+            80
+            120
+          ];
           tabCompletion = "on";
         };
         git.confirmSync = false;
