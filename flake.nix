@@ -33,20 +33,37 @@
       pkgs = import nixpkgs { inherit system; };
     in
     {
-      packages.${system}.deploy = pkgs.writeShellScriptBin "deploy" ''
-        #!${pkgs.bash}/bin/bash
-        set -euo pipefail
+      packages.${system} = {
+        test-deploy = pkgs.writeShellScriptBin "test-deploy" ''
+          #!${pkgs.bash}/bin/bash
+          set -euo pipefail
 
-        # Ensure that the host is provided
-        if [ "$#" -ne 1 ]; then
-          echo "Usage: deploy <host>"
-          exit 1
-        fi
+          # Ensure that the host is provided
+          if [ "$#" -ne 1 ]; then
+            echo "Usage: test_deploy <host>"
+            exit 1
+          fi
 
-        host=$1
+          host=$1
 
-        nixos-rebuild switch --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
-      '';
+          nixos-rebuild test --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
+        '';
+
+        deploy = pkgs.writeShellScriptBin "deploy" ''
+          #!${pkgs.bash}/bin/bash
+          set -euo pipefail
+
+          # Ensure that the host is provided
+          if [ "$#" -ne 1 ]; then
+            echo "Usage: deploy <host>"
+            exit 1
+          fi
+
+          host=$1
+
+          nixos-rebuild switch --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
+        '';
+      };
 
       formatter.${system} = pkgs.nixfmt-rfc-style;
 
