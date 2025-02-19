@@ -8,6 +8,7 @@
   imports = [
     ../../modules/system.nix
     ../../modules/network_access.nix
+    ../../modules/adguardhome.nix
 
     ../../users/jmcelroy-dev/nixos.nix
     ../../users/nixos-deploy/nixos.nix

@@ -16,6 +16,16 @@ To install the configuration for the jmcelroy-home system, run the following com
 sudo nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#jmcelroy-home' --show-trace --print-build-logs --verbose
 ```
 
+To test a deployment to a server, run the following command:
+```bash
+nix run .#test-deploy $server
+```
+
+To actually deploy to a server, run the following command:
+```bash
+nix run .#deploy $server
+```
+
 Architecture
 ------------
 
