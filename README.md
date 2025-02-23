@@ -26,6 +26,19 @@ To actually deploy to a server, run the following command:
 nix run .#deploy $server
 ```
 
+To explore the configured values, run the following command:
+```bash
+nix repl
+```
+followed by:
+```
+nix-repl> :lf .
+nix-repl> nixosConfigurations.jmcelroy-home.config.systemd.network.networks
+{
+    "10-lan" = { ... };
+}
+```
+
 Architecture
 ------------
 
