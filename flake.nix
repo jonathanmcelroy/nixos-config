@@ -96,5 +96,6 @@
 
       checks.x86_64-linux.server1Test = import ./tests/server1-test.nix { inherit pkgs home-manager; };
       checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
+      checks.x86_64-linux.homeNetworkTest = import ./tests/home-network-test.nix { inherit pkgs home-manager; };
     };
 }
