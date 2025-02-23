@@ -104,7 +104,7 @@
       };
       "org/gnome/mutter" = {
         edge-tiling = true;
-      }
+      };
       "org/gnome/shell" = {
         disable-user-extensions = false;
         # enabled-extensions = with pkgs.gnomeExtensions; [
