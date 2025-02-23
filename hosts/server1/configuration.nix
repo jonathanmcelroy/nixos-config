@@ -7,7 +7,8 @@
 {
   imports = [
     ../../modules/system.nix
-    ../../modules/network_access.nix
+    ../../modules/simple_networking.nix
+    ../../modules/adguardhome.nix
 
     ../../users/jmcelroy-dev/nixos.nix
     ../../users/nixos-deploy/nixos.nix
@@ -23,14 +24,18 @@
 
   networking = {
     hostName = "server1";
-    useNetworkd = true;
-    wireless = {
+    simpleNetworking = {
       enable = true;
-      secretsFile = "/etc/nix_wireless.conf";
-      networks.TP-Link_FA99 = {
-        pskRaw = "ext:psk_home_tplink";
-      };
+      interfaces = [ "enp1s0" ];
     };
+
+    # wireless = {
+    #   enable = true;
+    #   secretsFile = "/etc/nix_wireless.conf";
+    #   networks.TP-Link_FA99 = {
+    #     pskRaw = "ext:psk_home_tplink";
+    #   };
+    # };
   };
 
   # Configure network proxy if necessary

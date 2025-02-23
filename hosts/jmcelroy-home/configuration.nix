@@ -8,7 +8,7 @@
   imports = [
     ../../modules/system.nix
     ../../modules/gnome.nix
-    ../../modules/network_access.nix
+    ../../modules/simple_networking.nix
 
     ../../users/jmcelroy/nixos.nix
     ../../users/jmcelroy-dev/nixos.nix
@@ -23,9 +23,16 @@
   boot.loader.grub.device = "/dev/nvme0n1";
   boot.loader.grub.useOSProber = true;
 
+  # networking = {
+  #   hostName = "jmcelroy-home";
+  #   networkmanager.enable = true;
+  # };
   networking = {
     hostName = "jmcelroy-home";
-    networkmanager.enable = true;
+    simpleNetworking = {
+      enable = true;
+      interfaces = [ "enp30s0" ];
+    };
   };
 
   hardware.graphics = {

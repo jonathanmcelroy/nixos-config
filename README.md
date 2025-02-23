@@ -16,6 +16,29 @@ To install the configuration for the jmcelroy-home system, run the following com
 sudo nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#jmcelroy-home' --show-trace --print-build-logs --verbose
 ```
 
+To test a deployment to a server, run the following command:
+```bash
+nix run .#test-deploy $server
+```
+
+To actually deploy to a server, run the following command:
+```bash
+nix run .#deploy $server
+```
+
+To explore the configured values, run the following command:
+```bash
+nix repl
+```
+followed by:
+```
+nix-repl> :lf .
+nix-repl> nixosConfigurations.jmcelroy-home.config.systemd.network.networks
+{
+    "10-lan" = { ... };
+}
+```
+
 Architecture
 ------------
 
