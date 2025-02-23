@@ -19,6 +19,9 @@ let
     routes = [
       { Gateway = gateway; }
     ];
+    dns = [
+      (head all_addresses.server1)
+    ];
   };
 
   cfg = config.networking.simpleNetworking;
@@ -33,6 +36,11 @@ in {
         type = types.listOf types.str;
         description = "A list of interfaces to connect the IP addresses to. The interfaces must be the same length as the IP addresses.";
         default = [];
+      };
+      addresses = mkOption {
+        type = types.listOf types.str;
+        description = "A list of IP addresses to assign to the interfaces. SHOULD NEVER BE ASSIGNED";
+        default = addresses;
       };
     };
   };
@@ -58,6 +66,7 @@ in {
       networkmanager.enable = false;
       useDHCP = false;
       useNetworkd = true;
+      simpleNetworking.addresses = addresses;
     };
     systemd.services.systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
     systemd.network = {
