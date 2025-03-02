@@ -56,7 +56,7 @@ Hardware configuration should be as minimal as possible to ensure that as much i
 
 All the global services are stored in catalog/services.nix, so each machine knows where each service is located. Each host looked at the configuration to determine which services to enable.
 
-All custom modules are stored in `modules/`. Each one should have an `enable` flag to enable it for a host.
+All custom modules are stored in `modules/`. Each module should be scoped to `solar-system` and should have an `enable` flag to enable it for a host.
 
 Software configuration is further split into other directories:
 1. System configuration should go into `modules`.

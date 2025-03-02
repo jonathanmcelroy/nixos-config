@@ -10,7 +10,7 @@
 
     ../modules/system.nix
     ../modules/gnome.nix
-    ../modules/simple_networking.nix
+    ../modules/networking.nix
 
     ../users/jmcelroy/nixos.nix
     ../users/jmcelroy-dev/nixos.nix
@@ -20,8 +20,8 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
-  networking = {
-    simpleNetworking = {
+  solar-system = {
+    networking = {
       enable = true;
       interface = "enp30s0";
     };

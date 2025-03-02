@@ -9,7 +9,7 @@
     ../common.nix
 
     ../modules/system.nix
-    ../modules/simple_networking.nix
+    ../modules/networking.nix
     ../modules/adguardhome.nix
 
     ../users/jmcelroy-dev/nixos.nix
@@ -20,8 +20,8 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
-  networking = {
-    simpleNetworking = {
+  solar-system = {
+    networking = {
       enable = true;
       interface = "enp1s0";
     };

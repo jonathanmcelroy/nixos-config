@@ -15,14 +15,14 @@ let
     ];
   };
 
-  cfg = config.networking.simpleNetworking;
+  cfg = config.solar-system.networking;
   interface = cfg.interface;
 
   hostname = config.networking.hostName;
   address = catalog.nodes.${hostname}.ip;
 in {
   options = {
-    networking.simpleNetworking = {
+    solar-system.networking = {
       enable = mkEnableOption "Configure simple networking for this system";
       # interfaces = mkOption {
       #   type = types.listOf types.str;
