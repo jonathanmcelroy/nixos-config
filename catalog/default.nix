@@ -1,5 +1,6 @@
 let 
-    nodes = import ./nodes.nix;
+    base_nodes = import ./nodes.nix;
+    nodes = builtins.mapAttrs (hostName: node: node // { inherit hostName; }) base_nodes;
     services = import ./services.nix {
         inherit nodes;
     };
