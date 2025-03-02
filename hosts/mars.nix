@@ -9,8 +9,8 @@
     ../common.nix
 
     ../modules/system.nix
-    ../modules/networking.nix
     ../modules/adguardhome.nix
+    ../modules/networking.nix
 
     ../users/jmcelroy-dev/nixos.nix
     ../users/nixos-deploy/nixos.nix
@@ -26,13 +26,7 @@
       interface = "enp1s0";
     };
 
-    # wireless = {
-    #   enable = true;
-    #   secretsFile = "/etc/nix_wireless.conf";
-    #   networks.TP-Link_FA99 = {
-    #     pskRaw = "ext:psk_home_tplink";
-    #   };
-    # };
+    adguardhome.enable = true;
   };
 
   # Enable the OpenSSH daemon.

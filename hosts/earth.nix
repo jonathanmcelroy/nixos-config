@@ -10,6 +10,7 @@
 
     ../modules/system.nix
     ../modules/gnome.nix
+    ../modules/adguardhome.nix
     ../modules/networking.nix
 
     ../users/jmcelroy/nixos.nix
