@@ -31,9 +31,27 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
+
+      catalog = import ./catalog;
     in
     {
       packages.${system} = {
+        test-deploy-local = pkgs.writeShellScriptBin "test-deploy-local" ''
+          #!${pkgs.bash}/bin/bash
+          set -euo pipefail
+
+          # If host is not provided, get the host from the hostname
+          if [ "$#" -ge 2 ]; then
+            echo "Usage: test-deploy-local [host]"
+          elif [ "$#" -eq 1 ]; then
+            host=$1
+          else
+            host=$(hostname)
+          fi
+
+          nixos-rebuild test --flake "${self}#$host" --show-trace --print-build-logs --verbose
+        '';
+
         test-deploy = pkgs.writeShellScriptBin "test-deploy" ''
           #!${pkgs.bash}/bin/bash
           set -euo pipefail
@@ -47,6 +65,22 @@
           host=$1
 
           nixos-rebuild test --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
+        '';
+
+        deploy-local = pkgs.writeShellScriptBin "deploy-local" ''
+          #!${pkgs.bash}/bin/bash
+          set -euo pipefail
+
+          # If host is not provided, get the host from the hostname
+          if [ "$#" -ge 2 ]; then
+            echo "Usage: deploy-local [host]"
+          elif [ "$#" -eq 1 ]; then
+            host=$1
+          else
+            host=$(hostname)
+          fi
+
+          nixos-rebuild switch --flake "${self}#$host" --show-trace --print-build-logs --verbose
         '';
 
         deploy = pkgs.writeShellScriptBin "deploy" ''
@@ -67,35 +101,10 @@
 
       formatter.${system} = pkgs.nixfmt-rfc-style;
 
-      nixosConfigurations = {
-        jmcelroy-home = nixpkgs.lib.nixosSystem {
-          modules = [
-            home-manager.nixosModules.home-manager
-            ./hosts/jmcelroy-home/configuration.nix
-            ./hosts/jmcelroy-home/hardware-configuration.nix
-          ];
-        };
-        server1 = nixpkgs.lib.nixosSystem {
-          modules = [
-            home-manager.nixosModules.home-manager
-            ./hosts/server1/configuration.nix
-            ./hosts/server1/hardware-configuration.nix
-          ];
-        };
-        work = nixpkgs.lib.nixosSystem {
-          modules = [
-            nixos-wsl.nixosModules.default
-            {
-              system.stateVersion = "24.05";
-              wsl.enable = true;
-              nixpkgs.hostPlatform = nixpkgs.lib.mkDefault "x86_64-linux";
-            }
-          ];
-        };
-      };
+      nixosConfigurations = import ./util/nixos-configurations.nix inputs catalog "prod";
 
-      checks.x86_64-linux.server1Test = import ./tests/server1-test.nix { inherit pkgs home-manager; };
-      checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
-      checks.x86_64-linux.homeNetworkTest = import ./tests/home-network-test.nix { inherit pkgs home-manager; };
+      # checks.x86_64-linux.server1Test = import ./tests/server1-test.nix { inherit pkgs home-manager; };
+      # checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
+      checks.x86_64-linux.homeNetworkTest = import ./tests/home-network-test.nix { inherit nixpkgs pkgs home-manager; };
     };
 }
