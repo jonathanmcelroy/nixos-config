@@ -24,11 +24,9 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
     
-    - name: Deploy to server1
-      env:
-        SSH_KEY_PASSWORD: ${{ secrets.SSH_KEY_PASSWORD }}  
+    - name: Deploy to all hosts
       run: |
         eval "$(ssh-agent -s)"
-        echo "$SSH_KEY_PASSWORD" | ssh-add ssh/id_rsa
-        nix run .#deploy server1
+        ssh-add ssh/id_rsa
+        nix run .#deploy-all
         ssh-agent -k

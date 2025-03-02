@@ -100,6 +100,10 @@
     settings = {
       "org/gnome/desktop/interface" = {
         color-scheme = "prefer-dark";
+        clock-format = "12h";
+      };
+      "org/gnome/mutter" = {
+        edge-tiling = true;
       };
       "org/gnome/shell" = {
         disable-user-extensions = false;
