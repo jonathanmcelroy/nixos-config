@@ -3,7 +3,7 @@
 }:
 {
     adguard = {
-        host = nodes.server1;
+        host = nodes.mars;
         port = 3000;
 
         dashy.section = "networks";

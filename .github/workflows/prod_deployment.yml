@@ -24,11 +24,11 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
     
-    - name: Deploy to server1
+    - name: Deploy to mars
       env:
         SSH_KEY_PASSWORD: ${{ secrets.SSH_KEY_PASSWORD }}  
       run: |
         eval "$(ssh-agent -s)"
         echo "$SSH_KEY_PASSWORD" | ssh-add ssh/id_rsa
-        nix run .#deploy server1
+        nix run .#deploy mars
         ssh-agent -k

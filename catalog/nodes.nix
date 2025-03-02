@@ -5,7 +5,7 @@
         config = ../hosts/earth.nix;
         system = "x86_64-linux";
     };
-    server1 = {
+    mars = {
         ip = "192.168.0.11";
         hw = ../hw/mars.nix;
         config = ../hosts/mars.nix;

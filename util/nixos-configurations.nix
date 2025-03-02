@@ -43,13 +43,6 @@ in mapAttrs (
     }
 ) catalog.nodes
 # {
-#     server1 = nixpkgs.lib.nixosSystem {
-#         modules = [
-#         home-manager.nixosModules.home-manager
-#         ./hosts/server1/configuration.nix
-#         ./hosts/server1/hardware-configuration.nix
-#         ];
-#     };
 #     work = nixpkgs.lib.nixosSystem {
 #         modules = [
 #         nixos-wsl.nixosModules.default

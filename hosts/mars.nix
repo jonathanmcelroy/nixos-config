@@ -45,7 +45,7 @@
     enable = true;
     virtualHost = {
       enableNginx = true;
-      domain = "server1";
+      domain = "mars";
     };
   };
   networking.firewall.allowedTCPPorts = [ 80 ];
