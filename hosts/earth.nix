@@ -23,7 +23,7 @@
   networking = {
     simpleNetworking = {
       enable = true;
-      interfaces = [ "enp30s0" ];
+      interface = "enp30s0";
     };
   };
 

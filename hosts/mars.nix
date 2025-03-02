@@ -23,7 +23,7 @@
   networking = {
     simpleNetworking = {
       enable = true;
-      interfaces = [ "enp1s0" ];
+      interface = "enp1s0";
     };
 
     # wireless = {

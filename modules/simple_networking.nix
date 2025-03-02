@@ -1,46 +1,38 @@
 # This file defines the configuration to easily access all the servers in the network
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, catalog, ... }:
 with lib;
 let
   gateway = "192.168.0.1";
-  all_addresses = {
-    earth = [
-      "192.168.0.10"
-    ];
-    mars = [
-      "192.168.0.11"
-      # "192.168.0.12"
-    ];
-  };
-
   interface_to_config = i: {
     matchConfig.Name = i;
-    address = map (a: "${a}/24") addresses;
+    # address = map (a: "${a}/24") addresses;
+    address = [ "${address}/24" ];
     routes = [
       { Gateway = gateway; }
     ];
     dns = [
-      (head all_addresses.mars)
+      catalog.services.adguard.host.ip
     ];
   };
 
   cfg = config.networking.simpleNetworking;
-  interfaces = cfg.interfaces;
+  interface = cfg.interface;
+
   hostname = config.networking.hostName;
-  addresses = all_addresses.${hostname};
+  address = catalog.nodes.${hostname}.ip;
 in {
   options = {
     networking.simpleNetworking = {
       enable = mkEnableOption "Configure simple networking for this system";
-      interfaces = mkOption {
-        type = types.listOf types.str;
-        description = "A list of interfaces to connect the IP addresses to. The interfaces must be the same length as the IP addresses.";
+      # interfaces = mkOption {
+      #   type = types.listOf types.str;
+      #   description = "A list of interfaces to connect the IP addresses to. The interfaces must be the same length as the IP addresses.";
+      #   default = [];
+      # };
+      interface = mkOption {
+        type = types.str;
+        description = "The interface to connect the IP addresses to";
         default = [];
-      };
-      addresses = mkOption {
-        type = types.listOf types.str;
-        description = "A list of IP addresses to assign to the interfaces. SHOULD NEVER BE ASSIGNED";
-        default = addresses;
       };
     };
   };
@@ -48,17 +40,17 @@ in {
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = hasAttr hostname all_addresses;
+        assertion = hasAttr hostname catalog.nodes;
         message = ''
-          The hostname ${hostname} is not in network_access.all_addresses: ${attrNames all_addresses}.
+          The hostname ${hostname} is not in the catalog: ${attrNames catalog.nodes}.
         '';
       }
-      {
-        assertion = length addresses == length interfaces;
-        message = ''
-          The number of interfaces for ${hostname} (${toString interfaces}) must be the same as the number of IP addresses (${toString addresses}).
-        '';
-      }
+      # {
+      #   assertion = length addresses == length interfaces;
+      #   message = ''
+      #     The number of interfaces for ${hostname} (${toString interfaces}) must be the same as the number of IP addresses (${toString addresses}).
+      #   '';
+      # }
     ];
 
     # Configure the networking to use systemd-networkd
@@ -66,19 +58,20 @@ in {
       networkmanager.enable = false;
       useDHCP = false;
       useNetworkd = true;
-      simpleNetworking.addresses = addresses;
     };
     systemd.services.systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
     systemd.network = {
       enable = true;
-      networks = listToAttrs (map (i: {
-          name = "10-" + i;
-          value = interface_to_config i;
-        }) interfaces);
+      # networks = listToAttrs (map (i: {
+      #     name = "10-" + i;
+      #     value = interface_to_config i;
+      #   }) interfaces);
+      networks."10-${interface}" = interface_to_config interface;
     };
 
-    # Add all the hosts to the hosts file, but only include the first IP address from the list of IP addresses
-    networking.extraHosts = concatStringsSep "\n" (mapAttrsToList (name: value: "${head value} ${name}") all_addresses);
+    # Add all the hosts to the hosts file
+    # networking.extraHosts = concatStringsSep "\n" (mapAttrsToList (name: value: "${head value} ${name}") all_addresses);
+    networking.extraHosts = concatStringsSep "\n" (mapAttrsToList (name: value: "${value.ip} ${name}") catalog.nodes);
 
     programs.ssh.knownHosts = {
       mars = {

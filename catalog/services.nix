@@ -9,5 +9,5 @@
         dashy.section = "networks";
         dashy.description = "Ad Blocker";
         dashy.icon = "h1-adguardhome";
-    }
+    };
 }
