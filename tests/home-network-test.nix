@@ -6,16 +6,23 @@ in pkgs.testers.runNixOSTest ({
 
   testScript = { nodes, ... }:
   let
-    earth_ip = (pkgs.lib.head nodes.earth.networking.interfaces.eth1.ipv4.addresses).address;
-    mars_ip = (pkgs.lib.head nodes.mars.networking.interfaces.eth1.ipv4.addresses).address;
+    # Function to get the IP address of a node
+    getIp = node: (pkgs.lib.head node.networking.interfaces.eth1.ipv4.addresses).address;
+
+    # Collect all IPs into a dictionary
+    ips = builtins.mapAttrs (name: node: getIp node) nodes;
   in ''
     earth.start()
     mars.start()
 
     earth.wait_for_unit("default.target")
-    mars.wait_for_unit("default.target")
 
-    earth.succeed("ping -c 1 ${mars_ip}")
-    mars.succeed("ping -c 1 ${earth_ip}")
+    mars.wait_for_unit("default.target")
+    mars.wait_for_unit("adguardhome.service")
+
+    earth.succeed("ping -c 1 ${ips.mars}")
+    mars.succeed("ping -c 1 ${ips.earth}")
+
+    earth.succeed("curl ${ips.mars}:${toString catalog.services.adguard.port}")
   '';
 } // import ./base-test.nix inputs catalog)
