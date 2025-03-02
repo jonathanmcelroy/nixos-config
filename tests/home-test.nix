@@ -10,7 +10,7 @@ pkgs.testers.runNixOSTest {
   nodes.remote = inputs: {
     imports = [
       home-manager.nixosModules.home-manager
-      ../hosts/jmcelroy-home/configuration.nix
+      ../hosts/earth/configuration.nix
     ];
   };
 

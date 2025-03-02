@@ -1,39 +1,51 @@
 Jonathan McElroy's NixOS configuration
 ======
 
-This reposotory is to store my configuration-as-code for all my machines.  It uses flakes to manage the configuration. The configuration is stored in the `flake.nix` file.
+This repository is to store my configuration-as-code for all my machines. It uses nix flakes to manage the configuration. The configuration is stored in the `flake.nix` file.
 
 Usage
 -----
 
-To test the configuration for the jmcelroy-home system, run the following command:
+In all the following commands, `$hostname` is optional and will default to the current host's hostname if not provided.
+
+To test a host's configuration on the current host, run `test-deploy-local` in the repo:
 ```bash
-sudo nixos-rebuild test --flake '/usr/local/src/nixos-configuration#jmcelroy-home' --show-trace --print-build-logs --verbose
+nix run .#test-deploy-local $hostname
+```
+If the host is rebooted, the configuration will be reverted to the last deployed configuration.
+
+To deploy a host's configuration to the current host, run `deploy-local` in the repo:
+```bash
+nix run .#deploy-local $hostname
 ```
 
-To install the configuration for the jmcelroy-home system, run the following command:
+To test a host's configuration on a host via ssh, run the following command:
 ```bash
-sudo nixos-rebuild switch --flake '/usr/local/src/nixos-configuration#jmcelroy-home' --show-trace --print-build-logs --verbose
+nix run .#test-deploy $hostname
 ```
-
-To test a deployment to a server, run the following command:
+To test all hosts's configurations via ssh, run the following command:
 ```bash
-nix run .#test-deploy $server
+nix run .#test-deploy-all
 ```
+If a host is rebooted, the configuration will be reverted to the last deployed configuration.
 
-To actually deploy to a server, run the following command:
+To deploy a host's configuration to a host via ssh, run the following command:
 ```bash
 nix run .#deploy $server
 ```
+To deploy to all hosts via ssh, run the following command:
+```bash
+nix run .#deploy-all
+```
 
-To explore the configured values, run the following command:
+To explore the configuration, run the following command:
 ```bash
 nix repl
 ```
 followed by:
 ```
 nix-repl> :lf .
-nix-repl> nixosConfigurations.jmcelroy-home.config.systemd.network.networks
+nix-repl> nixosConfigurations.earth.config.systemd.network.networks
 {
     "10-lan" = { ... };
 }
@@ -42,14 +54,17 @@ nix-repl> nixosConfigurations.jmcelroy-home.config.systemd.network.networks
 Architecture
 ------------
 
-Each machine's configuration is stored in the `hosts/{hostname}` directory. The configuration is split into 2 pieces:
+All the hosts are listed in the catalog/nodes.nix file (taking inspiration from [this repo](https://github.com/jhillyerd/homelab)), pointing at the appropriate config files. 
 
-1. Hardware configuration in `hardware-configuration.nix`
-2. Software configuration in `configuration.nix`
+Each machine's software configuration is stored in `hosts/{hostname}.nix`. Each machine's hardware configuration is stored in `hw/{hostname}.nix`
 
-This is to enable VM testing by invoking the software configuration alone and ensuring that we can at least boot and ssh in.
+The split enables VM testing by invoking the software configuration alone and ensuring that we can at least boot and ssh in.
 
 Hardware configuration should be as minimal as possible to ensure that as much is tested as possible.
+
+All the global services are stored in catalog/services.nix, so each machine knows where each service is located. Each host looked at the configuration to determine which services to enable.
+
+All custom modules are stored in `modules/`. Each module should be scoped to `solar-system` and should have an `enable` flag to enable it for a host.
 
 Software configuration is further split into other directories:
 1. System configuration should go into `modules`.
