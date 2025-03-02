@@ -27,5 +27,6 @@ jobs:
     - name: Test deployment to all hosts
       run: |
         eval "$(ssh-agent -s)"
+        ssh-add ssh/id_rsa
         nix run .#test-deploy-all
         ssh-agent -k
