@@ -23,11 +23,19 @@ To test a host's configuration on a host via ssh, run the following command:
 ```bash
 nix run .#test-deploy $hostname
 ```
-If the host is rebooted, the configuration will be reverted to the last deployed configuration.
+To test all hosts's configurations via ssh, run the following command:
+```bash
+nix run .#test-deploy-all
+```
+If a host is rebooted, the configuration will be reverted to the last deployed configuration.
 
 To deploy a host's configuration to a host via ssh, run the following command:
 ```bash
 nix run .#deploy $server
+```
+To deploy to all hosts via ssh, run the following command:
+```bash
+nix run .#deploy-all
 ```
 
 To explore the configuration, run the following command:

@@ -33,8 +33,11 @@
       pkgs = import nixpkgs { inherit system; };
 
       catalog = import ./catalog;
+      nixosConfigurations = import ./util/nixos-configurations.nix inputs catalog "prod";
     in
     {
+      inherit nixosConfigurations;
+
       packages.${system} = {
         test-deploy-local = pkgs.writeShellScriptBin "test-deploy-local" ''
           #!${pkgs.bash}/bin/bash
@@ -67,6 +70,16 @@
           nixos-rebuild test --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
         '';
 
+        test-deploy-all = pkgs.writeShellScriptBin "test-deploy-all" ''
+          #!${pkgs.bash}/bin/bash
+          set -euo pipefail
+
+          for host in ${builtins.concatStringsSep " " (builtins.attrNames nixosConfigurations)}; do
+            echo "Testing deployment to $host"
+            nixos-rebuild test --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
+          done
+        '';
+
         deploy-local = pkgs.writeShellScriptBin "deploy-local" ''
           #!${pkgs.bash}/bin/bash
           set -euo pipefail
@@ -97,11 +110,19 @@
 
           nixos-rebuild switch --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
         '';
+
+        deploy-all = pkgs.writeShellScriptBin "test-deploy-all" ''
+          #!${pkgs.bash}/bin/bash
+          set -euo pipefail
+
+          for host in ${builtins.concatStringsSep " " (builtins.attrNames nixosConfigurations)}; do
+            echo "Testing deployment to $host"
+            nixos-rebuild switch --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
+          done
+        '';
       };
 
       formatter.${system} = pkgs.nixfmt-rfc-style;
-
-      nixosConfigurations = import ./util/nixos-configurations.nix inputs catalog "prod";
 
       # checks.x86_64-linux.marsTest = import ./tests/mars-test.nix { inherit pkgs home-manager; };
       # checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
