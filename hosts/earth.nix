@@ -20,10 +20,6 @@
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
 
-  # networking = {
-  #   hostName = "jmcelroy-home";
-  #   networkmanager.enable = true;
-  # };
   networking = {
     simpleNetworking = {
       enable = true;

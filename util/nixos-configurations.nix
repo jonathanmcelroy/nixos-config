@@ -43,13 +43,6 @@ in mapAttrs (
     }
 ) catalog.nodes
 # {
-#     jmcelroy-home = nixpkgs.lib.nixosSystem {
-#         modules = [
-#         home-manager.nixosModules.home-manager
-#         ./hosts/jmcelroy-home/configuration.nix
-#         ./hosts/jmcelroy-home/hardware-configuration.nix
-#         ];
-#     };
 #     server1 = nixpkgs.lib.nixosSystem {
 #         modules = [
 #         home-manager.nixosModules.home-manager

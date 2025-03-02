@@ -4,7 +4,7 @@ with lib;
 let
   gateway = "192.168.0.1";
   all_addresses = {
-    jmcelroy-home = [
+    earth = [
       "192.168.0.10"
     ];
     server1 = [

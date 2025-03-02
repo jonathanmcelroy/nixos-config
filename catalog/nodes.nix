@@ -1,5 +1,5 @@
 {
-    jmcelroy-home = {
+    earth = {
         ip = "192.168.0.10";
         hw = ../hw/earth.nix;
         config = ../hosts/earth.nix;
