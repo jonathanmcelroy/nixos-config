@@ -1,9 +1,15 @@
 # Setup adguard on a server
-{ config, lib, catalog, ... }:
+{
+  config,
+  lib,
+  catalog,
+  ...
+}:
 with lib;
 let
   cfg = config.solar-system.adguardhome;
-in {
+in
+{
   options = {
     solar-system.adguardhome = {
       enable = mkEnableOption "Enable AdGuard Home";

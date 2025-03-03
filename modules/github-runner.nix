@@ -3,6 +3,7 @@
   config,
   lib,
   catalog,
+  pkgs,
   ...
 }:
 with lib;

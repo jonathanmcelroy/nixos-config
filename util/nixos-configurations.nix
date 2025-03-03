@@ -1,46 +1,54 @@
 {
-    nixpkgs,
-    home-manager,
-    ...
-}: 
-catalog:
-environment:
-let 
-    inherit (nixpkgs.lib) mapAttrs nixosSystem;
+  nixpkgs,
+  home-manager,
+  ...
+}:
+catalog: environment:
+let
+  inherit (nixpkgs.lib) mapAttrs nixosSystem;
 
-    authorized_keys = import ../public-keys.nix;
+  authorized_keys = import ../public-keys.nix;
 
-    mkSystem = {
-        hostName,
-        node,
-    }: nixosSystem {
-        system = node.system;
+  mkSystem =
+    {
+      hostName,
+      node,
+    }:
+    nixosSystem {
+      system = node.system;
 
-        specialArgs = {
-            inherit authorized_keys catalog environment hostName;
-            self = node;
-        };
+      specialArgs = {
+        inherit
+          authorized_keys
+          catalog
+          environment
+          hostName
+          ;
+        self = node;
+      };
 
-        modules = [
-            (nodeModule node)
-            node.config
-            node.hw
-            home-manager.nixosModules.home-manager
-        ];
+      modules = [
+        (nodeModule node)
+        node.config
+        node.hw
+        home-manager.nixosModules.home-manager
+      ];
     };
 
-    nodeModule = node:
-        { hostName, ... }:
-        {
-            networking = { 
-                inherit hostName;
-            };
-        };
-in mapAttrs (
-    hostName: node:
-    mkSystem {
-        inherit hostName node;
-    }
+  nodeModule =
+    node:
+    { hostName, ... }:
+    {
+      networking = {
+        inherit hostName;
+      };
+    };
+in
+mapAttrs (
+  hostName: node:
+  mkSystem {
+    inherit hostName node;
+  }
 ) catalog.nodes
 # {
 #     work = nixpkgs.lib.nixosSystem {
