@@ -26,6 +26,8 @@
       enable = true;
       interface = "enp30s0";
     };
+
+    gnome.enable = true;
   };
 
   # Enable the OpenSSH daemon.

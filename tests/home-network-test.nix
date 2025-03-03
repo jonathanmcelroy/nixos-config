@@ -7,22 +7,26 @@ in pkgs.testers.runNixOSTest ({
   testScript = { nodes, ... }:
   let
     # Function to get the IP address of a node
-    getIp = node: (pkgs.lib.head node.networking.interfaces.eth1.ipv4.addresses).address;
+    get_ip = node: (pkgs.lib.head node.networking.interfaces.eth1.ipv4.addresses).address;
 
     # Collect all IPs into a dictionary
-    ips = builtins.mapAttrs (name: node: getIp node) nodes;
+    ips = builtins.mapAttrs (name: node: get_ip node) nodes;
   in ''
-    earth.start()
-    mars.start()
+    start_all()
 
-    earth.wait_for_unit("default.target")
+    with subtest("Earth boots and its services start"):
+      earth.wait_for_unit("default.target")
+      earth.wait_for_unit("display-manager.service")
 
-    mars.wait_for_unit("default.target")
-    mars.wait_for_unit("adguardhome.service")
+    with subtest("Mars boots and its services start"):
+      mars.wait_for_unit("default.target")
+      mars.wait_for_unit("adguardhome.service")
 
-    earth.succeed("ping -c 1 ${ips.mars}")
-    mars.succeed("ping -c 1 ${ips.earth}")
+    with subtest("Nodes can ping each other"):
+      earth.succeed("ping -c 1 ${ips.mars}")
+      mars.succeed("ping -c 1 ${ips.earth}")
 
-    earth.succeed("curl ${ips.mars}:${toString catalog.services.adguard.port}")
+    with subtest("Earth can access all services"):
+      earth.succeed("curl ${ips.mars}:${toString catalog.services.adguard.port}")
   '';
 } // import ./base-test.nix inputs catalog)
