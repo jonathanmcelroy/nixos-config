@@ -8,9 +8,7 @@
   imports = [
     ../common.nix
 
-    ../users/jmcelroy/nixos.nix
-    ../users/jmcelroy-dev/nixos.nix
-    ../users/nixos-deploy/nixos.nix
+    ../users/jmcelroy
   ];
 
   home-manager.useGlobalPkgs = true;
