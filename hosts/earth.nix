@@ -8,7 +8,7 @@
   imports = [
     ../common.nix
 
-    ../modules/system.nix
+    ../modules/sound.nix
     ../modules/gnome.nix
     ../modules/adguardhome.nix
     ../modules/networking.nix
@@ -26,15 +26,13 @@
       enable = true;
       interface = "enp30s0";
     };
-
     gnome.enable = true;
+    sound.enable = true;
   };
 
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-    enable = true;
-    settings.PasswordAuthentication = false;
-    settings.PermitRootLogin = "no";
-    settings.AllowUsers = [ "nixos-deploy" ];
-  };
+  # Enable CUPS for printing
+  services.printing.enable = true;
+
+  # Only allow nixos-deploy to remote in
+  services.openssh.settings.AllowUsers = [ "nixos-deploy" ];
 }

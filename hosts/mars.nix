@@ -8,7 +8,7 @@
   imports = [
     ../common.nix
 
-    ../modules/system.nix
+    ../modules/sound.nix
     ../modules/gnome.nix
     ../modules/adguardhome.nix
     ../modules/networking.nix
@@ -28,12 +28,6 @@
     };
 
     adguardhome.enable = true;
-  };
-
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-    enable = true;
-    settings.PasswordAuthentication = false;
   };
 
   services.dashy = {
