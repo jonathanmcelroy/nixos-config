@@ -8,11 +8,6 @@
   imports = [
     ../common.nix
 
-    ../modules/sound.nix
-    ../modules/gnome.nix
-    ../modules/adguardhome.nix
-    ../modules/networking.nix
-
     ../users/jmcelroy-dev/nixos.nix
     ../users/nixos-deploy/nixos.nix
     ../users/github-runner/nixos.nix
