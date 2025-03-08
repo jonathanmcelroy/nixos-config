@@ -5,17 +5,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ../common.nix
-
-    ../modules/system.nix
-    ../modules/networking.nix
-    ../modules/adguardhome.nix
-
-    ../users/jmcelroy-dev/nixos.nix
-    ../users/nixos-deploy/nixos.nix
-    ../users/github-runner/nixos.nix
-  ];
+  imports = [ ../common.nix ];
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
@@ -26,19 +16,8 @@
       interface = "enp1s0";
     };
 
-    # wireless = {
-    #   enable = true;
-    #   secretsFile = "/etc/nix_wireless.conf";
-    #   networks.TP-Link_FA99 = {
-    #     pskRaw = "ext:psk_home_tplink";
-    #   };
-    # };
-  };
-
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-    enable = true;
-    settings.PasswordAuthentication = false;
+    adguardhome.enable = true;
+    github-runner.enable = true;
   };
 
   services.dashy = {
