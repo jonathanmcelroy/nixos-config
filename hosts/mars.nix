@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, catalog, ... }:
 
 {
   imports = [ ../common.nix ];
@@ -26,13 +26,39 @@
       enableNginx = true;
       domain = "mars";
     };
+
+    settings = {
+      pageInfo = {
+        title = "Solar System";
+        description = "Dashboard for all the services in the solar system";
+        navLinks = [
+          {
+            title = "Documentation";
+            path = "https://dashy.to/docs";
+          }
+        ];
+      };
+      appConfig = {
+        theme = "colorful";
+        statusCheck = true;
+        disableConfiguration = true;
+        hideComponents = {
+          hideSettings = true;
+        };
+      };
+      sections = [
+        {
+          name = "Networking";
+          items = [
+            {
+              title = "AdGuard";
+              description = "AdGuard Ad Blocker";
+              url = "http://${catalog.services.adguard.host.hostName}:${toString catalog.services.adguard.port}";
+            }
+          ];
+        }
+      ];
+    };
   };
   networking.firewall.allowedTCPPorts = [ 80 ];
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
 }
