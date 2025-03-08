@@ -4,12 +4,33 @@ on:
   push:
 
 jobs:
+  nix-format-check:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run formatting
+      run: nix fmt
+
+    - name: Check that files were changed by formatter
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "Error: Code not formatted correctly. Please run 'nix fmt' to format your code."
+          git diff
+          exit 1
+        fi
+
   nix-check:
     runs-on: self-hosted
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    - name: Check that code is correctly formatted
+      run: nix fmt
 
     - name: Run Nix Check
       run: nix flake check

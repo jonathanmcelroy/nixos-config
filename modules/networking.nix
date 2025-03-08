@@ -1,5 +1,11 @@
 # This file defines the configuration to easily access all the servers in the network
-{ config, lib, pkgs, catalog, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  catalog,
+  ...
+}:
 with lib;
 let
   gateway = "192.168.0.1";
@@ -20,7 +26,8 @@ let
 
   hostname = config.networking.hostName;
   address = catalog.nodes.${hostname}.ip;
-in {
+in
+{
   options = {
     solar-system.networking = {
       enable = mkEnableOption "Configure simple networking for this system";
@@ -32,7 +39,7 @@ in {
       interface = mkOption {
         type = types.str;
         description = "The interface to connect the IP addresses to";
-        default = [];
+        default = [ ];
       };
     };
   };
@@ -71,7 +78,9 @@ in {
 
     # Add all the hosts to the hosts file
     # networking.extraHosts = concatStringsSep "\n" (mapAttrsToList (name: value: "${head value} ${name}") all_addresses);
-    networking.extraHosts = concatStringsSep "\n" (mapAttrsToList (name: value: "${value.ip} ${name}") catalog.nodes);
+    networking.extraHosts = concatStringsSep "\n" (
+      mapAttrsToList (name: value: "${value.ip} ${name}") catalog.nodes
+    );
 
     programs.ssh.knownHosts = {
       mars = {

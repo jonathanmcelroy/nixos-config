@@ -2,7 +2,8 @@
 with lib;
 let
   cfg = config.solar-system.gnome;
-in {
+in
+{
   options = {
     solar-system.gnome = {
       enable = mkEnableOption "Enable GNOME Desktop Environment";

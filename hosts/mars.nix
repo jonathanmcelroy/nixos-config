@@ -5,13 +5,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ../common.nix
-
-    ../users/jmcelroy-dev/nixos.nix
-    ../users/nixos-deploy/nixos.nix
-    ../users/github-runner/nixos.nix
-  ];
+  imports = [ ../common.nix ];
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
@@ -23,6 +17,7 @@
     };
 
     adguardhome.enable = true;
+    github-runner.enable = true;
   };
 
   services.dashy = {
