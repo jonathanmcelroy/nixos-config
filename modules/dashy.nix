@@ -10,31 +10,17 @@ let
   cfg = config.solar-system.dashy;
 
   # Group services by section
-  grouped_services = builtins.foldl' (
-    acc: service:
-    let
+  grouped_services = builtins.groupBy (service: service.dashy.section) (builtins.attrValues catalog.services);
+
+  # Calculate the dashy sections array
+  dashy_sections = builtins.attrValues (builtins.mapAttrs (section: services: {
+    name = section;
+    items = builtins.map (service: {
       title = service.name;
-      section = service.dashy.section;
       description = service.dashy.description;
       icon = service.dashy.icon;
       url = "http://${service.host.hostName}:${toString service.port}";
-
-      info = {
-        inherit
-          title
-          description
-          icon
-          url
-          ;
-      };
-    in acc // {
-      ${section} = (acc.${section} or [ ]) ++ [ info ];
-    }
-  ) { } (builtins.attrValues catalog.services);
-
-  dashy_sections = builtins.attrValues (builtins.mapAttrs (section: services: {
-    name = section;
-    items = services;
+    }) services;
   }) grouped_services);
 in
 {
