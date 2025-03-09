@@ -121,4 +121,10 @@
       # };
     };
   };
+
+  xdg.desktopEntries.dashboard = {
+    exec = "firefox http://mars";
+    name = "Dashboard";
+    comment = "Dashboard";
+  };
 }
