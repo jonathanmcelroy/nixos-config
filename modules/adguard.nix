@@ -7,11 +7,11 @@
 }:
 with lib;
 let
-  cfg = config.solar-system.adguardhome;
+  cfg = config.solar-system.adguard;
 in
 {
   options = {
-    solar-system.adguardhome = {
+    solar-system.adguard = {
       enable = mkEnableOption "Enable AdGuard Home";
     };
   };

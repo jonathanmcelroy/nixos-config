@@ -1,6 +1,7 @@
 inputs: {
   imports = [
-    ./adguardhome.nix
+    ./adguard.nix
+    ./dashy.nix
     ./github-runner.nix
     ./gnome.nix
     ./networking.nix
