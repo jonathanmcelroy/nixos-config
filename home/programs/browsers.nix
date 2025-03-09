@@ -1,4 +1,4 @@
-{ ... }:
+{ catalog, ... }:
 {
   # Make firefox the default browser
   xdg.mimeApps = {
@@ -123,7 +123,7 @@
   };
 
   xdg.desktopEntries.dashboard = {
-    exec = "firefox http://mars";
+    exec = "firefox http://${catalog.services.dashy.fqdn}";
     name = "Dashboard";
     comment = "Dashboard";
   };

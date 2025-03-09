@@ -14,9 +14,7 @@ let
       hostName,
       node,
     }:
-    nixosSystem {
-      system = node.system;
-
+    let
       specialArgs = {
         inherit
           authorized_keys
@@ -26,12 +24,18 @@ let
           ;
         self = node;
       };
+    in
+    nixosSystem {
+      inherit specialArgs;
+
+      system = node.system;
 
       modules = [
         (nodeModule node)
         node.config
         node.hw
         home-manager.nixosModules.home-manager
+        { home-manager.extraSpecialArgs = specialArgs; }
       ];
     };
 

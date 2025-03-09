@@ -25,9 +25,5 @@
     port = 5353;
 
     domain = "solar-system.lan";
-
-    dashy.section = "networks";
-    dashy.description = "DNS";
-    dashy.icon = "favicon";
   };
 }

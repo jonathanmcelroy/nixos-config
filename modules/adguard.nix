@@ -22,7 +22,7 @@ in
       enable = true;
       openFirewall = true;
       mutableSettings = false;
-      host = "0.0.0.0";
+      host = catalog.services.adguard.host.ip;
       port = catalog.services.adguard.port;
       settings = {
         # Refer to https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration#configuration-file

@@ -11,7 +11,7 @@ let
 
   # Group services by section
   grouped_services = builtins.groupBy (service: service.dashy.section) (
-    builtins.attrValues catalog.services
+    builtins.filter (builtins.hasAttr "dashy") (builtins.attrValues catalog.services)
   );
 
   # Calculate the dashy sections array
@@ -22,7 +22,7 @@ let
         title = service.name;
         description = service.dashy.description;
         icon = service.dashy.icon;
-        url = "http://${service.host.hostName}:${toString service.port}";
+        url = "http://${service.fqdn}:${toString service.port}";
       }) services;
     }) grouped_services
   );
@@ -33,7 +33,7 @@ in
       enable = mkEnableOption "Enable Dashy";
       domain = mkOption {
         type = types.str;
-        default = config.networking.hostName;
+        default = catalog.services.dashy.fqdn;
         description = "Domain name for the dashy dashboard";
       };
     };
@@ -44,7 +44,7 @@ in
       enable = true;
       virtualHost = {
         enableNginx = true;
-        domain = "mars";
+        domain = "${cfg.domain}";
       };
 
       settings = {

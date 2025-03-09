@@ -27,10 +27,15 @@ let
     ns    IN A ${catalog.services.coredns.host.ip}
 
     ; hosts
-    ${lib.concatMapStringsSep "\n" (node: "${node.hostName}.${cfg.domain}. ${toString ttl} IN A ${node.ip}") (builtins.attrValues catalog.nodes)}
+    ${lib.concatMapStringsSep "\n" (
+      node: "${node.hostName}.${cfg.domain}. ${toString ttl} IN A ${node.ip}"
+    ) (builtins.attrValues catalog.nodes)}
 
-    ; alias
-    '';
+    ; services
+    ${lib.concatMapStringsSep "\n" (
+      service: "${service.fqdn}. ${toString ttl} IN A ${service.host.ip}"
+    ) (builtins.attrValues catalog.services)}
+  '';
 in
 {
   options = {
