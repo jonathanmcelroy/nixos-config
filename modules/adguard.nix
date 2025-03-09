@@ -33,7 +33,7 @@ in
           ];
           upstream_dns = [
             "[/${catalog.services.coredns.domain}/]${catalog.services.coredns.host.ip}:${toString catalog.services.coredns.port}"
-            https://dns10.quad9.net/dns-query
+            "https://dns10.quad9.net/dns-query"
           ];
         };
       };

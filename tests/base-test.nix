@@ -20,6 +20,7 @@ let
       (nodeModule hostName node)
       node.config
       home-manager.nixosModules.home-manager
+      { home-manager.extraSpecialArgs = specialArgs; }
     ];
   };
 in
