@@ -66,6 +66,9 @@ in
   # Start ssh-agent when sshing in
   programs.ssh.startAgent = true;
 
+  # dconf must be enabled for random programs to work
+  programs.dconf.enable = true;
+
   # Start solar-system services
   solar-system = solar_system_enabled_services;
 
