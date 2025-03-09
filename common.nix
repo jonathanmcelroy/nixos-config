@@ -1,9 +1,25 @@
 {
+  config,
   pkgs,
+  catalog,
   ...
 }:
 let
   inherit (pkgs) lib;
+
+  # Get all catalog services for this host
+  host_services = builtins.filter (service: service.host.hostName == config.networking.hostName) (
+    builtins.attrValues catalog.services
+  );
+  # Set each service enable flag to true
+  solar_system_enabled_services = builtins.listToAttrs (
+    builtins.map (service: {
+      name = service.name;
+      value = {
+        enable = true;
+      };
+    }) host_services
+  );
 in
 {
   imports = [
@@ -49,6 +65,9 @@ in
 
   # Start ssh-agent when sshing in
   programs.ssh.startAgent = true;
+
+  # Start solar-system services
+  solar-system = solar_system_enabled_services;
 
   ############################################################################
   # Package Management

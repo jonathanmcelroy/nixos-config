@@ -21,8 +21,6 @@
       interface = "enp1s0";
     };
 
-    adguardhome.enable = true;
     github-runner.enable = true;
-    dashy.enable = true;
   };
 }

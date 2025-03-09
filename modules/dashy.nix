@@ -10,18 +10,22 @@ let
   cfg = config.solar-system.dashy;
 
   # Group services by section
-  grouped_services = builtins.groupBy (service: service.dashy.section) (builtins.attrValues catalog.services);
+  grouped_services = builtins.groupBy (service: service.dashy.section) (
+    builtins.attrValues catalog.services
+  );
 
   # Calculate the dashy sections array
-  dashy_sections = builtins.attrValues (builtins.mapAttrs (section: services: {
-    name = section;
-    items = builtins.map (service: {
-      title = service.name;
-      description = service.dashy.description;
-      icon = service.dashy.icon;
-      url = "http://${service.host.hostName}:${toString service.port}";
-    }) services;
-  }) grouped_services);
+  dashy_sections = builtins.attrValues (
+    builtins.mapAttrs (section: services: {
+      name = section;
+      items = builtins.map (service: {
+        title = service.name;
+        description = service.dashy.description;
+        icon = service.dashy.icon;
+        url = "http://${service.host.hostName}:${toString service.port}";
+      }) services;
+    }) grouped_services
+  );
 in
 {
   options = {
