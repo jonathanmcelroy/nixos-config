@@ -47,9 +47,8 @@ in
   config = mkIf cfg.enable {
     services.coredns = {
       enable = true;
-      extraArgs = [ "-dns.port=${toString coredns_port}" ];
       config = ''
-        ${cfg.domain} {
+        ${cfg.domain}:${toString coredns_port} {
           file ${fileZone}
           prometheus
           errors
