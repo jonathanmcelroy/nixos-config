@@ -26,4 +26,15 @@
 
     domain = "solar-system.lan";
   };
+
+  prometheus = {
+    host = nodes.mars;
+    port = 9090;
+
+    node_exporter_port = 9100;
+
+    dashy.section = "monitoring";
+    dashy.description = "Prometheus";
+    dashy.icon = "favicon";
+  };
 }
