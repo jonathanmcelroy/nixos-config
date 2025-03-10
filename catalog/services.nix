@@ -19,4 +19,11 @@
     dashy.description = "Ad Blocker";
     dashy.icon = "favicon";
   };
+
+  coredns = {
+    host = nodes.mars;
+    port = 5353;
+
+    domain = "solar-system.lan";
+  };
 }

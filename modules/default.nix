@@ -6,5 +6,6 @@ inputs: {
     ./gnome.nix
     ./networking.nix
     ./sound.nix
+    ./coredns.nix
   ];
 }

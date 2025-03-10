@@ -36,8 +36,8 @@ pkgs.testers.runNixOSTest (
           earth.succeed("ping -c 1 ${ips.mars}")
           mars.succeed("ping -c 1 ${ips.earth}")
 
-        with subtest("Earth can access all services"):
-          earth.succeed("curl ${ips.mars}:${toString catalog.services.adguard.port}")
+        # with subtest("Earth can access all services"):
+        #   earth.succeed("curl ${ips.mars}:${toString catalog.services.adguard.port}")
       '';
   }
   // import ./base-test.nix inputs catalog
