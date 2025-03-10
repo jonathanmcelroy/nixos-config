@@ -9,6 +9,11 @@ let
 
   authorized_keys = import ../public-keys.nix;
 
+  specialArgs = {
+    inherit authorized_keys catalog;
+    environment = "test";
+  };
+
   nodeModule = hostName: node: inputs: {
     networking = {
       inherit hostName;
@@ -27,10 +32,7 @@ in
 {
   node.pkgsReadOnly = false;
 
-  node.specialArgs = {
-    inherit authorized_keys catalog;
-    environment = "test";
-  };
+  node.specialArgs = specialArgs;
 
   nodes = mapAttrs mkNode catalog.nodes;
 }
