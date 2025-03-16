@@ -37,4 +37,13 @@
     dashy.description = "Prometheus";
     dashy.icon = "favicon";
   };
+
+  grafana = {
+    host = nodes.mars;
+    port = 3001;
+
+    dashy.section = "monitoring";
+    dashy.description = "Grafana";
+    dashy.icon = "favicon";
+  };
 }

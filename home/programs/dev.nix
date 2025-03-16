@@ -25,6 +25,7 @@
         vscodevim.vim
         bbenoist.nix
         rust-lang.rust-analyzer
+        vadimcn.vscode-lldb
         mkhl.direnv
         gitlab.gitlab-workflow
         github.copilot
