@@ -66,6 +66,17 @@ in
   # Start ssh-agent when sshing in
   programs.ssh.startAgent = true;
 
+  # Gather prometheus metrics
+  services.prometheus.exporters.node = {
+    enable = true;
+    port = catalog.services.prometheus.node_exporter_port;
+    enabledCollectors = [
+      "logind"
+      "systemd"
+    ];
+    openFirewall = true;
+  };
+
   # dconf must be enabled for random programs to work
   programs.dconf.enable = true;
 
