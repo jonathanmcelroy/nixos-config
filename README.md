@@ -83,3 +83,5 @@ Resources
 [NixOS packages search](https://search.nixos.org/packages?channel=24.05)
 
 [NixOS home manager options search](https://home-manager-options.extranix.com/?release=release-24.05)
+
+[awesome nix](https://github.com/nix-community/awesome-nix)

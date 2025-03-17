@@ -1,9 +1,25 @@
 {
+  config,
   pkgs,
+  catalog,
   ...
 }:
 let
   inherit (pkgs) lib;
+
+  # Get all catalog services for this host
+  host_services = builtins.filter (service: service.host.hostName == config.networking.hostName) (
+    builtins.attrValues catalog.services
+  );
+  # Set each service enable flag to true
+  solar_system_enabled_services = builtins.listToAttrs (
+    builtins.map (service: {
+      name = service.name;
+      value = {
+        enable = true;
+      };
+    }) host_services
+  );
 in
 {
   imports = [
@@ -49,6 +65,23 @@ in
 
   # Start ssh-agent when sshing in
   programs.ssh.startAgent = true;
+
+  # Gather prometheus metrics
+  services.prometheus.exporters.node = {
+    enable = true;
+    port = catalog.services.prometheus.node_exporter_port;
+    enabledCollectors = [
+      "logind"
+      "systemd"
+    ];
+    openFirewall = true;
+  };
+
+  # dconf must be enabled for random programs to work
+  programs.dconf.enable = true;
+
+  # Start solar-system services
+  solar-system = solar_system_enabled_services;
 
   ############################################################################
   # Package Management
