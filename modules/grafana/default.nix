@@ -18,6 +18,15 @@ let
       install -D -m755 $src/dashboards/*.json $out/
     '';
   };
+
+  grafana-contactPoints = pkgs.stdenv.mkDerivation {
+    name = "grafana-contactPoints";
+    src = ./.;
+    installPhase = ''
+      mkdir -p $out
+      install -D -m755 $src/contactPoints/*.json $out/
+    '';
+  };
 in
 {
   options = {
@@ -74,6 +83,9 @@ in
             options.path = grafana-dashboards;
           }
         ];
+        # alerting = {
+        #   contactPoints.path = ./contactPoints.yaml;
+        # };
       };
     };
 

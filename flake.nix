@@ -14,10 +14,19 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Home directory configuration
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Enable decrypting secrets in nix
+    sops-nix = {
+        url = "github:Mic92/sops-nix";
+        inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # 
   };
 
   outputs =
@@ -128,6 +137,12 @@
       # checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
       checks.x86_64-linux.homeNetworkTest = import ./tests/home-network-test.nix {
         inherit nixpkgs pkgs home-manager;
+      };
+
+      devShells.${system}.default = pkgs.mkShell {
+        buildInputs = [
+          pkgs.sops
+        ];
       };
     };
 }

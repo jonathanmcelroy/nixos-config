@@ -1,6 +1,7 @@
 {
   nixpkgs,
   home-manager,
+  sops-nix,
   ...
 }:
 catalog: environment:
@@ -36,6 +37,7 @@ let
         node.hw
         home-manager.nixosModules.home-manager
         { home-manager.extraSpecialArgs = specialArgs; }
+        sops-nix.nixosModules.sops
       ];
     };
 
