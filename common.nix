@@ -88,7 +88,7 @@ in
   ############################################################################
 
   sops.defaultSopsFile = ./secrets/github-runner.yaml;
-  sops.secrets.github-runner-token = {};
+  sops.secrets.github-runner-token = { };
   sops.secrets.grafana-discord-alert-webhook = {
     sopsFile = ./secrets/grafana.yaml;
   };
