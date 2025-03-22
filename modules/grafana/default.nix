@@ -93,6 +93,7 @@ in
         ];
         alerting = {
           contactPoints.path = config.sops.templates."grafana-contact-points.yaml".path;
+          rules.path = ./alerts.yaml;
         };
       };
     };
