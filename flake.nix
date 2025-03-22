@@ -35,6 +35,7 @@
       nixpkgs,
       home-manager,
       nixos-wsl,
+      sops-nix,
       ...
     }:
     let
@@ -136,7 +137,7 @@
       # checks.x86_64-linux.marsTest = import ./tests/mars-test.nix { inherit pkgs home-manager; };
       # checks.x86_64-linux.homeTest = import ./tests/home-test.nix { inherit pkgs home-manager; };
       checks.x86_64-linux.homeNetworkTest = import ./tests/home-network-test.nix {
-        inherit nixpkgs pkgs home-manager;
+        inherit nixpkgs pkgs home-manager sops-nix;
       };
 
       devShells.${system}.default = pkgs.mkShell {
