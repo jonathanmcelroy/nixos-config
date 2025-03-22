@@ -18,15 +18,6 @@ let
       install -D -m755 $src/dashboards/*.json $out/
     '';
   };
-
-  grafana-contactPoints = pkgs.stdenv.mkDerivation {
-    name = "grafana-contactPoints";
-    src = ./.;
-    installPhase = ''
-      mkdir -p $out
-      install -D -m755 $src/contactPoints/*.json $out/
-    '';
-  };
 in
 {
   options = {
@@ -51,6 +42,23 @@ in
   };
 
   config = mkIf cfg.enable {
+    sops.templates."grafana-contact-points.yaml" = {
+      content = ''
+        apiVersion: 1
+        contactPoints:
+          - orgId: 1
+            name: Discord
+            receivers:
+              - uid: ceg1ota03wzr5d
+                type: discord
+                settings:
+                  url: "${config.sops.placeholder.grafana-discord-alert-webhook}"
+                  use_discord_username: false
+                disableResolveMessage: false
+      '';
+      owner = "grafana";
+    };
+
     services.grafana = {
       enable = true;
       settings = {
@@ -83,9 +91,9 @@ in
             options.path = grafana-dashboards;
           }
         ];
-        # alerting = {
-        #   contactPoints.path = ./contactPoints.yaml;
-        # };
+        alerting = {
+          contactPoints.path = config.sops.templates."grafana-contact-points.yaml".path;
+        };
       };
     };
 
