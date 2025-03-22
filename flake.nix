@@ -39,7 +39,7 @@
     }:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = nixpkgs.legacyPackages.${system};
 
       catalog = import ./catalog;
       nixosConfigurations = import ./util/nixos-configurations.nix inputs catalog "prod";
