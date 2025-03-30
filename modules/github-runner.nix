@@ -25,12 +25,12 @@ in
     };
     users.groups.github-runner = { };
 
-    services.github-runners.runner1 = {
+    services.github-runners.nixos-runner = {
       enable = true;
       url = "https://github.com/jonathanmcelroy/nixos-config";
       user = "github-runner";
       group = "github-runner";
-      tokenFile = "/etc/github-runner/token";
+      tokenFile = config.sops.secrets.github-runner-token.path;
       extraPackages = with pkgs; [
         nixos-rebuild
         openssh

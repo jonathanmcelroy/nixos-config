@@ -42,6 +42,23 @@ in
   };
 
   config = mkIf cfg.enable {
+    sops.templates."grafana-contact-points.yaml" = {
+      content = ''
+        apiVersion: 1
+        contactPoints:
+          - orgId: 1
+            name: Discord
+            receivers:
+              - uid: ceg1ota03wzr5d
+                type: discord
+                settings:
+                  url: "${config.sops.placeholder.grafana-discord-alert-webhook}"
+                  use_discord_username: false
+                disableResolveMessage: false
+      '';
+      owner = "grafana";
+    };
+
     services.grafana = {
       enable = true;
       settings = {
@@ -74,6 +91,10 @@ in
             options.path = grafana-dashboards;
           }
         ];
+        alerting = {
+          contactPoints.path = config.sops.templates."grafana-contact-points.yaml".path;
+          rules.path = ./alerts.yaml;
+        };
       };
     };
 

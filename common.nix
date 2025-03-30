@@ -84,6 +84,16 @@ in
   solar-system = solar_system_enabled_services;
 
   ############################################################################
+  # Secrets
+  ############################################################################
+
+  sops.defaultSopsFile = ./secrets/github-runner.yaml;
+  sops.secrets.github-runner-token = { };
+  sops.secrets.grafana-discord-alert-webhook = {
+    sopsFile = ./secrets/grafana.yaml;
+  };
+
+  ############################################################################
   # Package Management
   ############################################################################
 
