@@ -115,6 +115,7 @@
         ];
         favorite-apps = [
           "firefox.desktop"
+          "obsidian.desktop"
           "code.desktop"
           "org.gnome.Console.desktop"
         ];
