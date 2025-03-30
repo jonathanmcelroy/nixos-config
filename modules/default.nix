@@ -6,6 +6,7 @@ inputs: {
     ./github-runner.nix
     ./gnome.nix
     ./grafana
+    ./jellyfin.nix
     ./networking.nix
     ./prometheus.nix
     ./sound.nix
