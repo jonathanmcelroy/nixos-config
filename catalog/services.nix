@@ -46,4 +46,13 @@
     dashy.description = "Grafana";
     dashy.icon = "favicon";
   };
+
+  jellyfin = {
+    host = nodes.mars;
+    port = 8096;
+
+    dashy.section = "networks";
+    dashy.description = "Jellyfin Media";
+    dashy.icon = "favicon";
+  };
 }
