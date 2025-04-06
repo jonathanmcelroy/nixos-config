@@ -24,17 +24,19 @@ let
 
   # Define the static metrics for roles and services
   host_roles = catalog.nodes.${config.networking.hostName}.roles;
-  host_roles_file_content = lib.concatStringsSep "\n" (
-    builtins.map (role: "role{role=\"${role}\"} 1") host_roles
-  ) + "\n";
-  host_services_metric_content = lib.concatStringsSep "\n" (
-    builtins.map (service: 
-      let
-        port = if builtins.hasAttr "port" service then toString service.port else "unknown";
-      in
+  host_roles_file_content =
+    lib.concatStringsSep "\n" (builtins.map (role: "role{role=\"${role}\"} 1") host_roles) + "\n";
+  host_services_metric_content =
+    lib.concatStringsSep "\n" (
+      builtins.map (
+        service:
+        let
+          port = if builtins.hasAttr "port" service then toString service.port else "unknown";
+        in
         "service{host=\"${config.networking.hostName}\", name=\"${service.name}\", port=\"${port}\"} 1"
-    ) host_services
-  ) + "\n";
+      ) host_services
+    )
+    + "\n";
 
 in
 {
@@ -91,7 +93,10 @@ in
       "systemd"
     ];
     openFirewall = true;
-    extraFlags = ["--collector.textfile.directory" "/etc/textfile_collector"];
+    extraFlags = [
+      "--collector.textfile.directory"
+      "/etc/textfile_collector"
+    ];
   };
   environment.etc = {
     "textfile_collector/role.prom" = {
@@ -103,7 +108,6 @@ in
       mode = "0644";
     };
   };
-
 
   # dconf must be enabled for random programs to work
   programs.dconf.enable = true;

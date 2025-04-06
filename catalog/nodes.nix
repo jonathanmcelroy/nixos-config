@@ -10,6 +10,6 @@
     hw = ../hw/mars.nix;
     config = ../hosts/mars.nix;
     system = "x86_64-linux";
-    roles = ["critical"];
+    roles = [ "critical" ];
   };
 }
