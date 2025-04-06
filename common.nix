@@ -23,17 +23,15 @@ let
   );
 
   # Define the static metrics for roles and services
-  host_roles = catalog.nodes.${config.networking.hostName}.roles;
+  host = builtins.getAttr config.networking.hostName catalog.nodes;
+  host_roles = if builtins.hasAttr "roles" host then host.roles else [ ];
   host_roles_file_content =
     lib.concatStringsSep "\n" (builtins.map (role: "role{role=\"${role}\"} 1") host_roles) + "\n";
   host_services_metric_content =
     lib.concatStringsSep "\n" (
       builtins.map (
         service:
-        let
-          port = if builtins.hasAttr "port" service then toString service.port else "unknown";
-        in
-        "service{host=\"${config.networking.hostName}\", name=\"${service.name}\", port=\"${port}\"} 1"
+        "service{host=\"${config.networking.hostName}\", name=\"${service.name}\", port=\"${toString service.port}\"} 1"
       ) host_services
     )
     + "\n";
