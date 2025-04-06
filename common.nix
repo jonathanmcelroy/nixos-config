@@ -11,6 +11,7 @@ let
   host_services = builtins.filter (service: service.host.hostName == config.networking.hostName) (
     builtins.attrValues catalog.services
   );
+
   # Set each service enable flag to true
   solar_system_enabled_services = builtins.listToAttrs (
     builtins.map (service: {
@@ -20,6 +21,21 @@ let
       };
     }) host_services
   );
+
+  # Define the static metrics for roles and services
+  host_roles = catalog.nodes.${config.networking.hostName}.roles;
+  host_roles_file_content = lib.concatStringsSep "\n" (
+    builtins.map (role: "role{role=\"${role}\"} 1") host_roles
+  ) + "\n";
+  host_services_metric_content = lib.concatStringsSep "\n" (
+    builtins.map (service: 
+      let
+        port = if builtins.hasAttr "port" service then toString service.port else "unknown";
+      in
+        "service{host=\"${config.networking.hostName}\", name=\"${service.name}\", port=\"${port}\"} 1"
+    ) host_services
+  ) + "\n";
+
 in
 {
   imports = [
@@ -75,7 +91,19 @@ in
       "systemd"
     ];
     openFirewall = true;
+    extraFlags = ["--collector.textfile.directory" "/etc/textfile_collector"];
   };
+  environment.etc = {
+    "textfile_collector/role.prom" = {
+      text = host_roles_file_content;
+      mode = "0644";
+    };
+    "textfile_collector/services.prom" = {
+      text = host_services_metric_content;
+      mode = "0644";
+    };
+  };
+
 
   # dconf must be enabled for random programs to work
   programs.dconf.enable = true;
