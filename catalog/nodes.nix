@@ -1,6 +1,6 @@
 {
   earth = {
-    ip = "192.168.0.10";
+    ip = "192.168.1.10";
     hw = ../hw/earth.nix;
     config = ../hosts/earth.nix;
     system = "x86_64-linux";

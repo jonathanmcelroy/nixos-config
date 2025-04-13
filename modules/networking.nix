@@ -8,7 +8,7 @@
 }:
 with lib;
 let
-  gateway = "192.168.0.1";
+  gateway = "192.168.1.1";
   interface_to_config = i: {
     matchConfig.Name = i;
     # address = map (a: "${a}/24") addresses;
