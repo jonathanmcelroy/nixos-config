@@ -8,7 +8,9 @@
 }:
 with lib;
 let
-  gateway = "192.168.1.1";
+  net = import ../util/net.nix { inherit lib; };
+
+  gateway = net.lib.net.cidr.host 1 "${address}/24";
   interface_to_config = i: {
     matchConfig.Name = i;
     # address = map (a: "${a}/24") addresses;
