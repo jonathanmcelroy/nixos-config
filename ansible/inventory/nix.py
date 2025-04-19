@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import json
-import subprocess
 import os
+import subprocess
+import sys
 
 DIRNAME = os.path.dirname(os.path.abspath(__file__))
 CATALOG_PATH = os.path.join(DIRNAME, "..", "..", "catalog", "default.nix")
@@ -22,7 +23,11 @@ def get_inventory():
         }
     }
 
+
     for name, props in servers["nodes"].items():
+        if "ip" not in props:
+            raise ValueError(f"Node '{name}' does not have an IP address.")
+
         inventory["_meta"]["hostvars"][name] = {
             "ansible_host": props["ip"],
             "roles": props.get("roles", [])
@@ -38,4 +43,8 @@ def get_inventory():
     return inventory
 
 if __name__ == "__main__":
-    print(json.dumps(get_inventory(), indent=2))
+    try:
+        print(json.dumps(get_inventory(), indent=2))
+    except Exception as e:
+        print(f"Error generating inventory: {e}", file=sys.stderr)
+        exit(1)

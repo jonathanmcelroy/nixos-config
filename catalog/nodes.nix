@@ -12,4 +12,12 @@
     system = "x86_64-linux";
     roles = [ "critical" ];
   };
+
+  sun = {
+    ips = [
+      "192.168.0.1"
+      "192.168.1.1"
+    ];
+    roles = [ "router" ];
+  };
 }

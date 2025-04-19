@@ -6,7 +6,9 @@
 }:
 catalog: environment:
 let
-  inherit (nixpkgs.lib) mapAttrs nixosSystem;
+  inherit (nixpkgs.lib) mapAttrs filterAttrs nixosSystem;
+
+  nixosNodes = filterAttrs (name: node: builtins.hasAttr "system" node) catalog.nodes;
 
   authorized_keys = import ../public-keys.nix;
 
@@ -55,7 +57,7 @@ mapAttrs (
   mkSystem {
     inherit hostName node;
   }
-) catalog.nodes
+) nixosNodes
 # {
 #     work = nixpkgs.lib.nixosSystem {
 #         modules = [
