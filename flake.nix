@@ -127,6 +127,8 @@
             nixos-rebuild switch --flake "${self}#$host" --target-host "nixos-deploy@$host" --use-remote-sudo --show-trace --print-build-logs --verbose
           done
         '';
+
+        ai = pkgs.writeShellScriptBin "ai" (builtins.readFile ./scripts/ai.sh);
       };
     in
     {
@@ -149,8 +151,9 @@
 
       devShells.${system}.default = pkgs.mkShell {
         packages = [
-          pkgs.sops
-          pkgs.direnv
+          pkgs.sops     # Sops for editing encrypted configuration
+          pkgs.direnv   # Direnv for automatically loading/refreshing dev shells
+          pkgs.ansible  # Ansible for deploying to non-nix nodes
         ] ++ (builtins.attrValues packages);
       };
     };
