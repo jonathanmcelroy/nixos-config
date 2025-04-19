@@ -44,11 +44,8 @@
 
       catalog = import ./catalog;
       nixosConfigurations = import ./util/nixos-configurations.nix inputs catalog "prod";
-    in
-    {
-      inherit nixosConfigurations;
 
-      packages.${system} = {
+      packages = {
         test-deploy-local = pkgs.writeShellScriptBin "test-deploy-local" ''
           #!${pkgs.bash}/bin/bash
           set -euo pipefail
@@ -131,6 +128,11 @@
           done
         '';
       };
+    in
+    {
+      inherit nixosConfigurations;
+
+      packages.${system} = packages;
 
       formatter.${system} = pkgs.nixfmt-rfc-style;
 
@@ -146,9 +148,10 @@
       };
 
       devShells.${system}.default = pkgs.mkShell {
-        buildInputs = [
+        packages = [
           pkgs.sops
-        ];
+          pkgs.direnv
+        ] ++ (builtins.attrValues packages);
       };
     };
 }
