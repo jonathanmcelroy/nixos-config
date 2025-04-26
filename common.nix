@@ -3,8 +3,7 @@
   pkgs,
   catalog,
   ...
-}:
-let
+}: let
   inherit (pkgs) lib;
 
   # Get all catalog services for this host
@@ -19,25 +18,27 @@ let
       value = {
         enable = true;
       };
-    }) host_services
+    })
+    host_services
   );
 
   # Define the static metrics for roles and services
   host = builtins.getAttr config.networking.hostName catalog.nodes;
-  host_roles = if builtins.hasAttr "roles" host then host.roles else [ ];
+  host_roles =
+    if builtins.hasAttr "roles" host
+    then host.roles
+    else [];
   host_roles_file_content =
     lib.concatStringsSep "\n" (builtins.map (role: "role{role=\"${role}\"} 1") host_roles) + "\n";
   host_services_metric_content =
     lib.concatStringsSep "\n" (
       builtins.map (
-        service:
-        "service{host=\"${config.networking.hostName}\", name=\"${service.name}\", port=\"${toString service.port}\"} 1"
-      ) host_services
+        service: "service{host=\"${config.networking.hostName}\", name=\"${service.name}\", port=\"${toString service.port}\"} 1"
+      )
+      host_services
     )
     + "\n";
-
-in
-{
+in {
   imports = [
     ./modules # Include all the custom modules
 
@@ -118,7 +119,7 @@ in
   ############################################################################
 
   sops.defaultSopsFile = ./secrets/github-runner.yaml;
-  sops.secrets.github-runner-token = { };
+  sops.secrets.github-runner-token = {};
   sops.secrets.grafana-discord-alert-webhook = {
     sopsFile = ./secrets/grafana.yaml;
   };

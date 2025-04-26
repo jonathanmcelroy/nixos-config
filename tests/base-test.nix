@@ -3,9 +3,7 @@
   home-manager,
   sops-nix,
   ...
-}:
-catalog:
-let
+}: catalog: let
   inherit (nixpkgs.lib) mapAttrs filterAttrs nixosSystem;
 
   nixosNodes = filterAttrs (name: node: builtins.hasAttr "system" node) catalog.nodes;
@@ -28,12 +26,11 @@ let
       (nodeModule hostName node)
       node.config
       home-manager.nixosModules.home-manager
-      { home-manager.extraSpecialArgs = specialArgs; }
+      {home-manager.extraSpecialArgs = specialArgs;}
       sops-nix.nixosModules.sops
     ];
   };
-in
-{
+in {
   node.pkgsReadOnly = false;
 
   node.specialArgs = specialArgs;

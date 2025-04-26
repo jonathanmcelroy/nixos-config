@@ -5,11 +5,9 @@
   catalog,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.solar-system.adguard;
-in
-{
+in {
   options = {
     solar-system.adguard = {
       enable = mkEnableOption "Enable AdGuard Home";
@@ -40,8 +38,8 @@ in
     };
 
     networking.firewall = {
-      allowedTCPPorts = [ 53 ];
-      allowedUDPPorts = [ 53 ];
+      allowedTCPPorts = [53];
+      allowedUDPPorts = [53];
     };
   };
 }

@@ -1,9 +1,11 @@
-{ config, lib, ... }:
-with lib;
-let
-  cfg = config.solar-system.gnome;
-in
 {
+  config,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.solar-system.gnome;
+in {
   options = {
     solar-system.gnome = {
       enable = mkEnableOption "Enable GNOME Desktop Environment";
@@ -20,5 +22,4 @@ in
       desktopManager.gnome.enable = true;
     };
   };
-
 }

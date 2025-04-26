@@ -6,11 +6,9 @@
   catalog,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.solar-system.prometheus;
-in
-{
+in {
   options = {
     solar-system.prometheus = {
       enable = mkEnableOption "Enable Prometheus";
@@ -38,6 +36,6 @@ in
       ];
     };
 
-    networking.firewall.allowedTCPPorts = [ catalog.services.prometheus.port ];
+    networking.firewall.allowedTCPPorts = [catalog.services.prometheus.port];
   };
 }

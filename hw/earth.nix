@@ -3,9 +3,7 @@
   lib,
   modulesPath,
   ...
-}:
-
-{
+}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
@@ -17,9 +15,9 @@
     "usbhid"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.kernelModules = [];
+  boot.kernelModules = ["kvm-amd"];
+  boot.extraModulePackages = [];
 
   boot.loader.grub = {
     enable = true;
@@ -33,7 +31,7 @@
   };
 
   swapDevices = [
-    { device = "/dev/disk/by-uuid/8e3caa1c-0186-4e51-b4e0-4b500452c86c"; }
+    {device = "/dev/disk/by-uuid/8e3caa1c-0186-4e51-b4e0-4b500452c86c";}
   ];
 
   hardware.graphics = {
@@ -47,7 +45,7 @@
 
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = ["nvidia"];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

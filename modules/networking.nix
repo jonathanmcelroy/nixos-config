@@ -6,17 +6,16 @@
   catalog,
   ...
 }:
-with lib;
-let
-  net = import ../util/net.nix { inherit lib; };
+with lib; let
+  net = import ../util/net.nix {inherit lib;};
 
   gateway = net.lib.net.cidr.host 1 "${address}/24";
   interface_to_config = i: {
     matchConfig.Name = i;
     # address = map (a: "${a}/24") addresses;
-    address = [ "${address}/24" ];
+    address = ["${address}/24"];
     routes = [
-      { Gateway = gateway; }
+      {Gateway = gateway;}
     ];
     dns = [
       catalog.services.adguard.host.ip
@@ -28,8 +27,7 @@ let
 
   hostname = config.networking.hostName;
   address = catalog.nodes.${hostname}.ip;
-in
-{
+in {
   options = {
     solar-system.networking = {
       enable = mkEnableOption "Configure simple networking for this system";
@@ -41,7 +39,7 @@ in
       interface = mkOption {
         type = types.str;
         description = "The interface to connect the IP addresses to";
-        default = [ ];
+        default = [];
       };
     };
   };
