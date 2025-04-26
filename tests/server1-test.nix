@@ -1,10 +1,14 @@
-{ pkgs, home-manager, ... }:
+{
+  pkgs,
+  home-manager,
+  ...
+}:
 pkgs.testers.runNixOSTest {
   name = "boot-test";
 
   node.pkgsReadOnly = false;
   node.specialArgs = {
-    usernames = [ ];
+    usernames = [];
   };
 
   nodes.remote = inputs: {

@@ -6,8 +6,7 @@
   pkgs,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.solar-system.coredns;
 
   coredns_port = catalog.services.coredns.port or 53;
@@ -22,7 +21,7 @@ let
             30          ; Zone update retry timeout (seconds)
             180         ; Zone TTL (seconds)
             3600        ; Negative response TTL (seconds)
-            ) 
+            )
 
     ns    IN A ${catalog.services.coredns.host.ip}
 
@@ -36,8 +35,7 @@ let
       service: "${service.fqdn}. ${toString ttl} IN A ${service.host.ip}"
     ) (builtins.attrValues catalog.services)}
   '';
-in
-{
+in {
   options = {
     solar-system.coredns = {
       enable = mkEnableOption "Enable CoreDNS";
@@ -62,7 +60,7 @@ in
       '';
     };
 
-    networking.firewall.allowedTCPPorts = [ coredns_port ];
-    networking.firewall.allowedUDPPorts = [ coredns_port ];
+    networking.firewall.allowedTCPPorts = [coredns_port];
+    networking.firewall.allowedUDPPorts = [coredns_port];
   };
 }

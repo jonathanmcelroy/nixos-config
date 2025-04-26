@@ -1,7 +1,4 @@
-{
-  nodes,
-}:
-{
+{nodes}: {
   dashy = {
     host = nodes.mars;
     port = 80;

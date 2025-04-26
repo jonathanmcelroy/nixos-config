@@ -3,9 +3,7 @@
   config,
   pkgs,
   ...
-}:
-
-{
+}: {
   ##################################################################################################################
   #
   # NixOS Configuration
@@ -26,7 +24,7 @@
   # nixos-deploy should never require a password with sudo
   security.sudo.extraRules = [
     {
-      users = [ "nixos-deploy" ];
+      users = ["nixos-deploy"];
       commands = [
         {
           command = "ALL";
@@ -38,5 +36,4 @@
       ];
     }
   ];
-
 }

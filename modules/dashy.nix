@@ -5,8 +5,7 @@
   catalog,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.solar-system.dashy;
 
   # Group services by section
@@ -18,16 +17,18 @@ let
   dashy_sections = builtins.attrValues (
     builtins.mapAttrs (section: services: {
       name = section;
-      items = builtins.map (service: {
-        title = service.name;
-        description = service.dashy.description;
-        icon = service.dashy.icon;
-        url = "http://${service.fqdn}:${toString service.port}";
-      }) services;
-    }) grouped_services
+      items =
+        builtins.map (service: {
+          title = service.name;
+          description = service.dashy.description;
+          icon = service.dashy.icon;
+          url = "http://${service.fqdn}:${toString service.port}";
+        })
+        services;
+    })
+    grouped_services
   );
-in
-{
+in {
   options = {
     solar-system.dashy = {
       enable = mkEnableOption "Enable Dashy";
@@ -69,7 +70,6 @@ in
         sections = dashy_sections;
       };
     };
-    networking.firewall.allowedTCPPorts = [ 80 ];
-
+    networking.firewall.allowedTCPPorts = [80];
   };
 }

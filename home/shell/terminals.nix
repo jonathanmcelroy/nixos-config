@@ -1,11 +1,8 @@
-{ pkgs, ... }:
-
+{pkgs, ...}:
 # terminals
-
 let
   font = "JetBrainsMono Nerd Font";
-in
-{
+in {
   programs.alacritty = {
     enable = true;
     settings = {
@@ -23,7 +20,6 @@ in
       #   italic.family = font;
       #   size = 11;
       # };
-
     };
   };
 }

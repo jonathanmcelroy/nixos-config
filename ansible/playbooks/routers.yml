@@ -1,0 +1,77 @@
+# Configures the routers
+- name: Configure OpenWRT Router
+  hosts: router
+  gather_facts: false
+  vars:
+    secrets: "{{ lookup('community.sops.sops', 'sops_secrets.yaml') | from_yaml }}"
+    wifi_password: "{{ secrets.wifi_password }}"
+
+    wifi_devices:
+      - name: wireless.radio0
+        band: '5g'
+        channel: '36'
+      - name: wireless.radio1
+        band: '2g'
+        channel: '1'
+    wifi_interfaces:
+      - name: wireless.default_radio0
+        device: 'radio0'
+      - name: wireless.default_radio1
+        device: 'radio1'
+  roles:
+    - role: gekmihesg.openwrt
+  tasks:
+    - name: Ensure required packages are installed
+      community.general.opkg:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - luci
+        - luci-app-firewall
+
+    - name: Configure wifi device
+      uci:
+        command: set
+        key: "{{ wifi.name }}"
+        value:
+          type: 'mac80211'
+          band: "{{ wifi.band }}"
+          channel: "{{ wifi.channel }}"
+          disabled: '0'
+      loop: "{{ wifi_devices }}"
+      loop_control:
+        loop_var: wifi
+        label: "{{ wifi.name }}"
+
+    - name: Configure wifi interface
+      uci:
+        command: set
+        key: "{{ wifi.name }}"
+        value:
+          device: "{{ wifi.device }}"
+          network: 'lan'
+          mode: 'ap'
+          ssid: '@xxxx[]::::::::::::::::::::::::>'
+          encryption: 'psk2'
+          disabled: '0'
+      loop: "{{ wifi_interfaces }}"
+      loop_control:
+        loop_var: wifi
+        label: "{{ wifi.name }}"
+
+    - name: Set wifi password
+      uci:
+        command: set
+        key: "{{ wifi.name }}"
+        value:
+          key: "{{ wifi_password }}"
+      loop: "{{ wifi_interfaces }}"
+      loop_control:
+        loop_var: wifi
+        label: "{{ wifi.name }}"
+      no_log: true
+
+    - name: Commit UCI changes
+      uci:
+        command: commit
+      notify: reload wifi
