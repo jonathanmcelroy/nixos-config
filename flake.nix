@@ -129,6 +129,7 @@
         '';
 
         ai = pkgs.writeShellScriptBin "ai" (builtins.readFile ./scripts/ai.sh);
+        ap = pkgs.writeShellScriptBin "ap" (builtins.readFile ./scripts/ap.sh);
       };
     in
     {

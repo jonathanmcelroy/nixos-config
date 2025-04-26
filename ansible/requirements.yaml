@@ -1,0 +1,2 @@
+- src: https://github.com/gekmihesg/ansible-openwrt.git
+  name: gekmihesg.openwrt

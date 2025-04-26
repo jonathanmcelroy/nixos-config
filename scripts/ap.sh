@@ -1,2 +1,2 @@
 export ANSIBLE_CONFIG="ansible/ansible.cfg"
-ansible-inventory -i ansible/inventory "$@"
+ansible-playbook -i ansible/inventory "$@"
