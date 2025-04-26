@@ -47,4 +47,4 @@ jobs:
       with:
         setup_python: false
         working_directory: ansible
-        requirements_file: ansible/requirements.yaml
+        requirements_file: requirements.yaml
