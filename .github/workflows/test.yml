@@ -34,3 +34,17 @@ jobs:
 
     - name: Run Nix Check
       run: nix flake check
+
+  ansible-check:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Lint Ansible
+      uses: ansible/ansible-lint@main
+      with:
+        setup_python: false
+        working_directory: ansible
+        
