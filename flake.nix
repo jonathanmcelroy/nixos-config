@@ -128,6 +128,7 @@
 
       ai = pkgs.writeShellScriptBin "ai" (builtins.readFile ./scripts/ai.sh);
       ap = pkgs.writeShellScriptBin "ap" (builtins.readFile ./scripts/ap.sh);
+      al = pkgs.writeShellScriptBin "al" (builtins.readFile ./scripts/al.sh);
     };
   in {
     inherit nixosConfigurations;
