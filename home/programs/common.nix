@@ -2,8 +2,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   home.packages = with pkgs; [
     # archives
     zip
@@ -109,7 +108,7 @@
         disable-user-extensions = false;
         # enabled-extensions = with pkgs.gnomeExtensions; [
         # ];
-        disabled-extensions = [ ];
+        disabled-extensions = [];
         enabled-extensions = with pkgs.gnomeExtensions; [
           system-monitor.extensionUuid
         ];

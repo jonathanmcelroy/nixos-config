@@ -5,11 +5,9 @@
   catalog,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.solar-system.jellyfin;
-in
-{
+in {
   options = {
     solar-system.jellyfin = {
       enable = mkEnableOption "Enable Jellyfin Media Server";

@@ -3,11 +3,9 @@
   lib,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.solar-system.sound;
-in
-{
+in {
   options = {
     solar-system.sound = {
       enable = mkEnableOption "Enable sound support";

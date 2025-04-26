@@ -6,11 +6,9 @@
   pkgs,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.solar-system.github-runner;
-in
-{
+in {
   options = {
     solar-system.github-runner = {
       enable = mkEnableOption "Enable Github Runner";
@@ -23,7 +21,7 @@ in
       description = "Github runner";
       group = "github-runner";
     };
-    users.groups.github-runner = { };
+    users.groups.github-runner = {};
 
     services.github-runners.nixos-runner = {
       enable = true;
@@ -35,7 +33,7 @@ in
         nixos-rebuild
         openssh
       ];
-      extraLabels = [ "nixos" ];
+      extraLabels = ["nixos"];
     };
   };
 }

@@ -3,29 +3,27 @@
   home-manager,
   sops-nix,
   ...
-}:
-catalog: environment:
-let
-  inherit (nixpkgs.lib) mapAttrs nixosSystem;
+}: catalog: environment: let
+  inherit (nixpkgs.lib) mapAttrs filterAttrs nixosSystem;
+
+  nixosNodes = filterAttrs (name: node: builtins.hasAttr "system" node) catalog.nodes;
 
   authorized_keys = import ../public-keys.nix;
 
-  mkSystem =
-    {
-      hostName,
-      node,
-    }:
-    let
-      specialArgs = {
-        inherit
-          authorized_keys
-          catalog
-          environment
-          hostName
-          ;
-        self = node;
-      };
-    in
+  mkSystem = {
+    hostName,
+    node,
+  }: let
+    specialArgs = {
+      inherit
+        authorized_keys
+        catalog
+        environment
+        hostName
+        ;
+      self = node;
+    };
+  in
     nixosSystem {
       inherit specialArgs;
 
@@ -36,26 +34,24 @@ let
         node.config
         node.hw
         home-manager.nixosModules.home-manager
-        { home-manager.extraSpecialArgs = specialArgs; }
+        {home-manager.extraSpecialArgs = specialArgs;}
         sops-nix.nixosModules.sops
       ];
     };
 
-  nodeModule =
-    node:
-    { hostName, ... }:
-    {
-      networking = {
-        inherit hostName;
-      };
+  nodeModule = node: {hostName, ...}: {
+    networking = {
+      inherit hostName;
     };
+  };
 in
-mapAttrs (
-  hostName: node:
-  mkSystem {
-    inherit hostName node;
-  }
-) catalog.nodes
+  mapAttrs (
+    hostName: node:
+      mkSystem {
+        inherit hostName node;
+      }
+  )
+  nixosNodes
 # {
 #     work = nixpkgs.lib.nixosSystem {
 #         modules = [
@@ -68,3 +64,4 @@ mapAttrs (
 #         ];
 #     };
 # };
+

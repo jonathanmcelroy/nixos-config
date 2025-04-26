@@ -1,21 +1,17 @@
-{ pkgs, ... }@inputs:
-let
+{pkgs, ...} @ inputs: let
   catalog = import ../catalog;
 in
-pkgs.testers.runNixOSTest (
-  {
-    name = "boot-test";
+  pkgs.testers.runNixOSTest (
+    {
+      name = "boot-test";
 
-    testScript =
-      { nodes, ... }:
-      let
+      testScript = {nodes, ...}: let
         # Function to get the IP address of a node
         get_ip = node: (pkgs.lib.head node.networking.interfaces.eth1.ipv4.addresses).address;
 
         # Collect all IPs into a dictionary
         ips = builtins.mapAttrs (name: node: get_ip node) nodes;
-      in
-      ''
+      in ''
         start_all()
 
         with subtest("Earth boots and its services start"):
@@ -39,6 +35,6 @@ pkgs.testers.runNixOSTest (
         # with subtest("Earth can access all services"):
         #   earth.succeed("curl ${ips.mars}:${toString catalog.services.adguard.port}")
       '';
-  }
-  // import ./base-test.nix inputs catalog
-)
+    }
+    // import ./base-test.nix inputs catalog
+  )

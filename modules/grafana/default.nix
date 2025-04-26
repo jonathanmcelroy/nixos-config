@@ -6,8 +6,7 @@
   catalog,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.solar-system.grafana;
 
   grafana-dashboards = pkgs.stdenv.mkDerivation {
@@ -18,8 +17,7 @@ let
       install -D -m755 $src/dashboards/*.json $out/
     '';
   };
-in
-{
+in {
   options = {
     solar-system.grafana = {
       enable = mkEnableOption "Enable Grafana";
@@ -98,6 +96,6 @@ in
       };
     };
 
-    networking.firewall.allowedTCPPorts = [ cfg.port ];
+    networking.firewall.allowedTCPPorts = [cfg.port];
   };
 }

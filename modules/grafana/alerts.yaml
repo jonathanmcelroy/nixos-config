@@ -7,7 +7,7 @@ groups:
       rules:
         - uid: eegne5tszek1sd
           title: ServerDown
-          condition: C
+          condition: down_status
           data:
             - refId: up_status
               relativeTimeRange:
@@ -16,39 +16,14 @@ groups:
               datasourceUid: PBFA97CFB590B2093
               model:
                 editorMode: code
-                expr: up{job="node"}
+                expr: up * on (instance) group_left(role) role{role="critical"}
                 instant: true
                 intervalMs: 1000
                 legendFormat: __auto
                 maxDataPoints: 43200
                 range: false
                 refId: up_status
-            - refId: B
-              datasourceUid: __expr__
-              model:
-                conditions:
-                    - evaluator:
-                        params: []
-                        type: gt
-                      operator:
-                        type: and
-                      query:
-                        params:
-                            - B
-                      reducer:
-                        params: []
-                        type: last
-                      type: query
-                datasource:
-                    type: __expr__
-                    uid: __expr__
-                expression: up_status
-                intervalMs: 1000
-                maxDataPoints: 43200
-                reducer: last
-                refId: B
-                type: reduce
-            - refId: C
+            - refId: down_status
               datasourceUid: __expr__
               model:
                 conditions:
@@ -60,7 +35,7 @@ groups:
                         type: and
                       query:
                         params:
-                            - C
+                            - down_status
                       reducer:
                         params: []
                         type: last
@@ -71,7 +46,7 @@ groups:
                 expression: up_status
                 intervalMs: 1000
                 maxDataPoints: 43200
-                refId: C
+                refId: down_status
                 type: threshold
           noDataState: NoData
           execErrState: Error
