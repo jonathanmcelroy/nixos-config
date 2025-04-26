@@ -1,2 +1,8 @@
-- src: https://github.com/gekmihesg/ansible-openwrt.git
-  name: gekmihesg.openwrt
+---
+collections:
+  - community.general
+  - community.sops
+
+roles:
+  - src: https://github.com/gekmihesg/ansible-openwrt.git
+    name: gekmihesg.openwrt
