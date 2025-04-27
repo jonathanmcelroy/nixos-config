@@ -52,4 +52,13 @@
     dashy.description = "Jellyfin Media";
     dashy.icon = "favicon";
   };
+
+  openwrt = {
+    host = nodes.sun;
+    port = 80;
+
+    dashy.section = "networks";
+    dashy.description = "OpenWRT";
+    dashy.icon = "favicon";
+  };
 }
