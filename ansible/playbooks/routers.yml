@@ -29,6 +29,15 @@
         - luci
         - luci-app-firewall
 
+    - name: Configure WAN
+      uci:
+        command: set
+        key: network.wan
+        value:
+          peerdns: '0'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
+
     - name: Configure wifi device
       uci:
         command: set
