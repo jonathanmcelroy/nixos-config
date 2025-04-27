@@ -61,4 +61,13 @@
     dashy.description = "OpenWRT";
     dashy.icon = "favicon";
   };
+
+  radarr = {
+    host = nodes.mars;
+    port = 7878;
+
+    dashy.section = "entertainment";
+    dashy.description = "Radarr Movie Manager";
+    dashy.icon = "favicon";
+  };
 }

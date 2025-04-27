@@ -65,6 +65,7 @@ in {
       networkmanager.enable = false;
       useDHCP = false;
       useNetworkd = true;
+      enableIPv6 = false;
     };
     systemd.services.systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
     systemd.network = {

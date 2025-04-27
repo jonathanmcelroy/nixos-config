@@ -9,6 +9,7 @@ inputs: {
     ./jellyfin.nix
     ./networking.nix
     ./prometheus.nix
+    ./radarr.nix
     ./sound.nix
   ];
 }
