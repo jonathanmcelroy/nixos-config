@@ -122,6 +122,10 @@
       "org/gnome/settings-daemon/plugins/power" = {
         sleep-inactive-ac-type = "nothing";
       };
+      "org/gnome/settings-daemon/plugins/media-keys" = {
+        home = ["<Super>e"];
+        www = ["<Super>b"];
+      };
     };
   };
 }
