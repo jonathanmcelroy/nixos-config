@@ -9,16 +9,19 @@
 with lib; let
   net = import ../util/net.nix {inherit lib;};
 
-  gateway = net.lib.net.cidr.host 1 "${address}/24";
+  gateway = net.lib.net.cidr.host 1 "${ipv4}/24";
   interface_to_config = i: {
     matchConfig.Name = i;
-    # address = map (a: "${a}/24") addresses;
-    address = ["${address}/24"];
+    address = [
+      "${ipv4}/24"
+      "${ipv6}/64"
+    ];
     routes = [
       {Gateway = gateway;}
     ];
     dns = [
       catalog.services.adguard.host.ip
+      catalog.services.adguard.host.ipv6
     ];
   };
 
@@ -26,7 +29,8 @@ with lib; let
   interface = cfg.interface;
 
   hostname = config.networking.hostName;
-  address = catalog.nodes.${hostname}.ip;
+  ipv4 = catalog.nodes.${hostname}.ip;
+  ipv6 = catalog.nodes.${hostname}.ipv6;
 in {
   options = {
     solar-system.networking = {
@@ -65,7 +69,7 @@ in {
       networkmanager.enable = false;
       useDHCP = false;
       useNetworkd = true;
-      enableIPv6 = false;
+      # enableIPv6 = false;
     };
     systemd.services.systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
     systemd.network = {
