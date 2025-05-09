@@ -43,7 +43,8 @@
   users.groups.media = {};
 
   systemd.tmpfiles.rules = [
-    "d /var/media 0755 root root "
+    "d /var/media 0755 root root"
+    "d /var/media/music 0755 media media"
   ];
 
 }
