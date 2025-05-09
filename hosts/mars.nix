@@ -47,4 +47,10 @@
     "d /var/media/music 0755 media media"
   ];
 
+  services.lidarr = {
+    enable = true;
+    openFirewall = true;
+    user = "media";
+    group = "media";
+  };
 }
