@@ -70,4 +70,13 @@
     dashy.description = "Radarr Movie Manager";
     dashy.icon = "favicon";
   };
+
+  # lidarr = {
+  #   host = nodes.mars;
+  #   port = 8686;
+
+  #   dashy.section = "entertainment";
+  #   dashy.description = "Lidarr Music Manager";
+  #   dashy.icon = "favicon";
+  # };
 }
