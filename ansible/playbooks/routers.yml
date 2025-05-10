@@ -242,6 +242,56 @@
       no_log: true
 
     ############################################################################
+    ### Firewall
+    ############################################################################
+
+    - name: Configure lan firewall zone
+      uci:
+        command: section
+        config: firewall
+        type: zone
+        name: lan
+        find:
+          name: lan
+          network: lan
+        value:
+          input: ACCEPT
+          output: ACCEPT
+          forward: ACCEPT
+
+    - name: Configure wan firewall zone
+      uci:
+        command: section
+        config: firewall
+        type: zone
+        name: wan
+        find:
+          name: wan
+          network:
+            - wan
+            - wan6
+        value:
+          input: REJECT
+          output: ACCEPT
+          forward: REJECT
+          masq: 1
+          mtu_fix: 1
+
+    - name: Configure vpn firewall zone
+      uci:
+        command: section
+        config: firewall
+        type: zone
+        name: vpn
+        find:
+          name: vpn
+          network: vpn
+        value:
+          input: ACCEPT
+          output: ACCEPT
+          forward: ACCEPT  
+
+    ############################################################################
     ### Commit changes
     ############################################################################
 
