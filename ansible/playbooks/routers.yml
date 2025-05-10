@@ -43,154 +43,111 @@
     ### VLANs
     ############################################################################
 
-    - name: Ensure that VLAN1 exists
-      block:
-        - name: Get VLAN1
-          uci:
-            command: get
-            key: network.@switch_vlan[0]
-          register: vlan1_exists
-      rescue:
-        - name: Add VLAN 1 if it doesn't exist
-          uci:
-            command: add
-            key: network.switch_vlan
-          when: "vlan1_exists.result == 'uci: Entry not found'"
-
-    - name: Configure VLAN 1 (non-vpn LAN)
+    - name: Configure switch
       uci:
-        command: set
-        key: network.@switch_vlan[0]
+        command: section
+        config: network
+        type: switch
+        name: switch0
+        find:
+          name: switch0
         value:
-          device: 'switch0'
-          vlan: '1'
+          reset: '1'
+          enable_vlan: '1'
+
+    - name: Configure non-vpn VLAN
+      uci:
+        command: section
+        config: network
+        type: switch_vlan
+        name: nonvpn_vlan
+        find:
+          device: switch0
+          vlan: 1
+        value:
           ports: '2 3 4 5 0t'
 
-    - name: Ensure that VLAN2 exists
-      block:
-        - name: Get VLAN2
-          uci:
-            command: get
-            key: network.@switch_vlan[1]
-          register: vlan2_exists
-      rescue:
-        - name: Add VLAN 2 if it doesn't exist
-          uci:
-            command: add
-            key: network.switch_vlan
-          when: "vlan2_exists.result == 'uci: Entry not found'"
-
-    - name: Configure VLAN 2 (WAN)
+    - name: Configure wan VLAN
       uci:
-        command: set
-        key: network.@switch_vlan[1]
+        command: section
+        config: network
+        type: switch_vlan
+        name: wan_vlan
+        find:
+          device: switch0
+          vlan: 2
         value:
-          device: 'switch0'
-          vlan: '2'
           ports: '1 0t'
     
-    - name: Ensure that VLAN3 exists
-      block:
-        - name: Get VLAN3
-          uci:
-            command: get
-            key: network.@switch_vlan[2]
-          register: vlan3_exists
-      rescue:
-        - name: Add VLAN 3 if it doesn't exist
-          uci:
-            command: add
-            key: network.switch_vlan
-          when: "vlan3_exists.result == 'uci: Entry not found'"
-
-    - name: Configure VLAN 3 (VPN LAN)
+    - name: Configure vpn VLAN
       uci:
-        command: set
-        key: network.@switch_vlan[2]
+        command: section
+        config: network
+        type: switch_vlan
+        name: vpn_vlan
+        find:
+          device: switch0
+          vlan: 3
         value:
-          device: 'switch0'
-          vlan: '3'
           ports: '2t 3t 4t 5t 0t'
 
     ############################################################################
     ### Devices
     ############################################################################
 
-    - name: Ensure that device 1 exists
-      block:
-        - name: Get device 1
-          uci:
-            command: get
-            key: network.@device[0]
-          register: device0_exists
-      rescue:
-        - name: Add device 1 if it doesn't exist
-          uci:
-            command: add
-            key: network.device
-          when: "device0_exists.result == 'uci: Entry not found'"
-
     - name: Configure non-vpn lan bridge device
       uci:
-        command: set
-        key: network.@device[0]
+        command: section
+        config: network
+        type: device
+        name: br_lan
+        find:
+          name: br-lan
         value:
-          name: 'br-lan'
-          type: 'bridge'
-          ports: 'eth0.1'
-
-    - name: Ensure that device 3 exists
-      block:
-        - name: Get device 3
-          uci:
-            command: get
-            key: network.@device[2]
-          register: device2_exists
-      rescue:
-        - name: Add device 3 if it doesn't exist
-          uci:
-            command: add
-            key: network.device
-          when: "device2_exists.result == 'uci: Entry not found'"
+          type: bridge
+          ports: eth0.1
 
     - name: Configure vpn lan bridge device
       uci:
-        command: set
-        key: network.@device[2]
+        command: section
+        config: network
+        type: device
+        name: br_vpn
+        find:
+          name: br-vpn
         value:
-          name: 'br-vpn'
-          type: 'bridge'
-          ports: 'eth0.3'
+          type: bridge
+          ports: eth0.3
 
     ############################################################################
     ### Interfaces
     ############################################################################
 
-    # - name: Configure non-VPN interface
-    #   uci:
-    #     command: set
-    #     key: network.lan
-    #     value:
-    #       device: 'br-lan'
-    #       proto: 'static'
-    #       ip6assign: '60'
-    #       ipaddr:
-    #         - '192.168.1.1/24'
-    #         - '192.168.0.1/24'
-
-    - name: Create VPN interface
+    - name: Configure non-VPN interface
       uci:
-        command: set
-        key: network.vpn
-        value: interface
+        command: section
+        config: network
+        type: interface
+        name: lan
+        find:
+          device: br-lan
+        value:
+          proto: static
+          ip6assign: '60'
+          ipaddr:
+            - '192.168.1.1/24'
+            - '192.168.0.1/24'
 
     - name: Configure VPN interface
       uci:
-        command: set  
-        key: network.vpn
+        command: section
+        config: network
+        type: interface
+        name: vpn
+        find:
+          device: br-vpn
         value:
-          device: 'eth0.3'
-          proto: 'static'
+          proto: static
           ip6assign: '60'
           ipaddr:
             - '192.168.3.1/24'
@@ -296,6 +253,7 @@
     ############################################################################
 
     - name: Commit UCI changes
+      when: not (no_commit | default(false) | bool)
       uci:
         command: commit
       notify: reload wifi
