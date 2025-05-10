@@ -248,6 +248,26 @@
           output: ACCEPT
           forward: ACCEPT  
 
+    - name: Allow forwarding from lan to wan
+      uci:
+        command: section
+        config: firewall
+        type: forwarding
+        name: lan_wan
+        find:
+          src: lan
+          dest: wan
+      
+    - name: Allow forwarding from vpn to wan
+      uci:
+        command: section
+        config: firewall
+        type: forwarding
+        name: vpn_wan
+        find:
+          src: vpn
+          dest: wan
+
     ############################################################################
     ### Commit changes
     ############################################################################
