@@ -28,6 +28,7 @@
       loop:
         - luci
         - luci-app-firewall
+        - wireguard-tools
 
     - name: Configure WAN
       uci:
@@ -37,6 +38,75 @@
           peerdns: '0'
           dns:
             - "{{ hostvars['mars']['ansible_host'] }}"
+
+    - name: Ensure that VLAN1 exists
+      block:
+        - name: Get VLAN1
+          uci:
+            command: get
+            key: network.@switch_vlan[0]
+          register: vlan1_exists
+      rescue:
+        - name: Add VLAN 1 if it doesn't exist
+          uci:
+            command: add
+            key: network.switch_vlan
+          when: "vlan1_exists.result == 'uci: Entry not found'"
+
+    - name: Configure VLAN 1 (non-vpn LAN)
+      uci:
+        command: set
+        key: network.@switch_vlan[0]
+        value:
+          device: 'switch0'
+          vlan: '1'
+          ports: '2 3 4 5 0t'
+
+    - name: Ensure that VLAN2 exists
+      block:
+        - name: Get VLAN2
+          uci:
+            command: get
+            key: network.@switch_vlan[1]
+          register: vlan2_exists
+      rescue:
+        - name: Add VLAN 2 if it doesn't exist
+          uci:
+            command: add
+            key: network.switch_vlan
+          when: "vlan2_exists.result == 'uci: Entry not found'"
+
+    - name: Configure VLAN 2 (WAN)
+      uci:
+        command: set
+        key: network.@switch_vlan[1]
+        value:
+          device: 'switch0'
+          vlan: '2'
+          ports: '1 0t'
+    
+    - name: Ensure that VLAN3 exists
+      block:
+        - name: Get VLAN3
+          uci:
+            command: get
+            key: network.@switch_vlan[2]
+          register: vlan3_exists
+      rescue:
+        - name: Add VLAN 3 if it doesn't exist
+          uci:
+            command: add
+            key: network.switch_vlan
+          when: "vlan3_exists.result == 'uci: Entry not found'"
+
+    - name: Configure VLAN 3 (VPN LAN)
+      uci:
+        command: set
+        key: network.@switch_vlan[2]
+        value:
+          device: 'switch0'
+          vlan: '3'
+          ports: '2t 3t 4t 5t 0t'
 
     - name: Configure wifi device
       uci:
