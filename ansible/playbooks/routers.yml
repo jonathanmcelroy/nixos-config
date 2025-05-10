@@ -39,6 +39,10 @@
           dns:
             - "{{ hostvars['mars']['ansible_host'] }}"
 
+    ############################################################################
+    ### VLANs
+    ############################################################################
+
     - name: Ensure that VLAN1 exists
       block:
         - name: Get VLAN1
@@ -108,6 +112,93 @@
           vlan: '3'
           ports: '2t 3t 4t 5t 0t'
 
+    ############################################################################
+    ### Devices
+    ############################################################################
+
+    - name: Ensure that device 1 exists
+      block:
+        - name: Get device 1
+          uci:
+            command: get
+            key: network.@device[0]
+          register: device0_exists
+      rescue:
+        - name: Add device 1 if it doesn't exist
+          uci:
+            command: add
+            key: network.device
+          when: "device0_exists.result == 'uci: Entry not found'"
+
+    - name: Configure non-vpn lan bridge device
+      uci:
+        command: set
+        key: network.@device[0]
+        value:
+          name: 'br-lan'
+          type: 'bridge'
+          ports: 'eth0.1'
+
+    - name: Ensure that device 3 exists
+      block:
+        - name: Get device 3
+          uci:
+            command: get
+            key: network.@device[2]
+          register: device2_exists
+      rescue:
+        - name: Add device 3 if it doesn't exist
+          uci:
+            command: add
+            key: network.device
+          when: "device2_exists.result == 'uci: Entry not found'"
+
+    - name: Configure vpn lan bridge device
+      uci:
+        command: set
+        key: network.@device[2]
+        value:
+          name: 'br-vpn'
+          type: 'bridge'
+          ports: 'eth0.3'
+
+    ############################################################################
+    ### Interfaces
+    ############################################################################
+
+    # - name: Configure non-VPN interface
+    #   uci:
+    #     command: set
+    #     key: network.lan
+    #     value:
+    #       device: 'br-lan'
+    #       proto: 'static'
+    #       ip6assign: '60'
+    #       ipaddr:
+    #         - '192.168.1.1/24'
+    #         - '192.168.0.1/24'
+
+    - name: Create VPN interface
+      uci:
+        command: set
+        key: network.vpn
+        value: interface
+
+    - name: Configure VPN interface
+      uci:
+        command: set  
+        key: network.vpn
+        value:
+          device: 'eth0.3'
+          proto: 'static'
+          ip6assign: '60'
+          ipaddr:
+            - '192.168.3.1/24'
+
+    ############################################################################
+    ### Wifi
+    ############################################################################
+
     - name: Configure wifi device
       uci:
         command: set
@@ -149,6 +240,10 @@
         loop_var: wifi
         label: "{{ wifi.name }}"
       no_log: true
+
+    ############################################################################
+    ### Commit changes
+    ############################################################################
 
     - name: Commit UCI changes
       uci:
