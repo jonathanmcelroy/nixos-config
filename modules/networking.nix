@@ -19,10 +19,10 @@ with lib; let
     routes = [
       {Gateway = gateway;}
     ];
-    dns = [
-      catalog.services.adguard.host.ip
-      catalog.services.adguard.host.ipv6
-    ];
+    # dns = [
+    #   catalog.services.adguard.host.ip
+    #   catalog.services.adguard.host.ipv6
+    # ];
   };
 
   cfg = config.solar-system.networking;
@@ -70,15 +70,28 @@ in {
       useDHCP = false;
       useNetworkd = true;
       # enableIPv6 = false;
+
+      vlans = {
+        vlan10 = {
+          id = 10;
+          interface = interface;
+        };
+        # vlan20 = {
+        #   id = 20;
+        #   interface = interface;
+        # }
+      };
     };
-    systemd.services.systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
+    systemd.services = {
+      systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
+    };
     systemd.network = {
       enable = true;
       # networks = listToAttrs (map (i: {
       #     name = "10-" + i;
       #     value = interface_to_config i;
       #   }) interfaces);
-      networks."10-${interface}" = interface_to_config interface;
+      networks."50-vlan10" = interface_to_config "vlan10";
     };
 
     # Add all the hosts to the hosts file
