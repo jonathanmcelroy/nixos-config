@@ -307,8 +307,8 @@
         type: route
         name: vpn_local_routes
         value:
-          interface: br-lan
-          target: 192.168.0.0/16  # Covers all local networks
+          interface: lan
+          target: 192.168.0.0/16
           table: vpn_table
 
     ############################################################################
@@ -446,27 +446,33 @@
           masq: 1
           mtu_fix: 1
 
-    - name: Allow forwarding from lan to wan
+    - name: Allow forwarding from lan to other zones
       tags: firewall
       uci:
         command: section
         config: firewall
         type: forwarding
-        name: lan_wan
+        name: "lan_{{ item }}"
         value:
           src: lan
-          dest: wan
+          dest: "{{ item}}"
+      loop:
+        - wan
+        - vpn
       
-    - name: Allow forwarding from vpn to protonvpn
+    - name: Allow forwarding from vpn to other zones
       tags: firewall
       uci:
         command: section
         config: firewall
         type: forwarding
-        name: vpn_protonvpn
+        name: "vpn_{{ item }}"
         value:
           src: vpn
-          dest: protonvpn
+          dest: "{{ item }}"
+      loop:
+        - protonvpn
+        - lan
 
     - name: Force VLAN 10 traffic through WireGuard
       tags: firewall
