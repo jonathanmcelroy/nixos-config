@@ -32,15 +32,6 @@
         - wireguard-tools
         - tcpdump
 
-    - name: Configure WAN
-      uci:
-        command: set
-        key: network.wan
-        value:
-          peerdns: '0'
-          dns:
-            - "{{ hostvars['mars']['ansible_host'] }}"
-
     ############################################################################
     ### VLANs
     ############################################################################
@@ -167,6 +158,9 @@
           ipaddr:
             - '192.168.1.1/24'
             - '192.168.0.1/24'
+          peerdns: '0'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
 
     - name: Configure VPN interface
       uci:
@@ -181,6 +175,9 @@
           ip6assign: '60'
           ipaddr:
             - '192.168.10.1/24'
+          peerdns: '0'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
 
     - name: Configure direct traffic interface
       uci:
@@ -195,6 +192,18 @@
           ip6assign: '60'
           ipaddr:
             - '192.168.20.1/24'
+          peerdns: '0'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
+
+    - name: Configure WAN
+      uci:
+        command: set
+        key: network.wan
+        value:
+          peerdns: '0'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
 
     - name: Configure Wireguard Interface
       uci:
@@ -207,7 +216,9 @@
           private_key: "{{ secrets.proton_vpn_usco50_private_key }}"
           addresses:
             - '10.2.0.2/32'
-          dns: '10.2.0.1'
+          # dns: '10.2.0.1'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
 
     - name: Configure WireGuard peer
       uci:

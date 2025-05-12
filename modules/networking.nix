@@ -19,14 +19,18 @@ with lib; let
     routes = [
       {Gateway = gateway;}
     ];
-    # dns = [
-    #   catalog.services.adguard.host.ip
-    #   catalog.services.adguard.host.ipv6
-    # ];
+    dns = [
+      catalog.services.adguard.host.ip
+      catalog.services.adguard.host.ipv6
+    ];
   };
 
   cfg = config.solar-system.networking;
   interface = cfg.interface;
+  virtual_interface = if ipv4 == null then interface else
+    if builtins.match "192.168.10.*" ipv4 != null then "vlan10" else
+    if builtins.match "192.168.20.*" ipv4 != null then "vlan20" else
+    interface;
 
   hostname = config.networking.hostName;
   ipv4 = catalog.nodes.${hostname}.ip;
@@ -76,10 +80,10 @@ in {
           id = 10;
           interface = interface;
         };
-        # vlan20 = {
-        #   id = 20;
-        #   interface = interface;
-        # }
+        vlan20 = {
+          id = 20;
+          interface = interface;
+        };
       };
     };
     systemd.services = {
@@ -91,7 +95,18 @@ in {
       #     name = "10-" + i;
       #     value = interface_to_config i;
       #   }) interfaces);
-      networks."50-vlan10" = interface_to_config "vlan10";
+      networks = {
+        "10-${interface}" = {
+          matchConfig.Name = interface;
+          networkConfig = {
+            LinkLocalAddressing = "no";
+            IPv6AcceptRA = "no";
+            DHCP = "no";
+            ConfigureWithoutCarrier = true;
+          };
+        };
+        "50-network" = interface_to_config virtual_interface;
+      };
     };
 
     # Add all the hosts to the hosts file
