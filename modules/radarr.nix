@@ -9,11 +9,6 @@ in {
   options = {
     solar-system.radarr = {
       enable = mkEnableOption "Enable Radarr Movie Manager";
-      dataDir = mkOption {
-        type = types.str;
-        default = "/var/lib/radarr/.config/Radarr";
-        description = "Directory for Radarr's data storage.";
-      };
     };
   };
 
@@ -21,11 +16,8 @@ in {
     services.radarr = {
       enable = true;
       openFirewall = true;
-      dataDir = cfg.dataDir;
+      user = "media";
+      group = "media";
     };
-
-    systemd.tmpfiles.rules = [
-      "d ${cfg.dataDir} 0755 radarr radarr"
-    ];
   };
 }

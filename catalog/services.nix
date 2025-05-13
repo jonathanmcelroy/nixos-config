@@ -71,6 +71,24 @@
     dashy.icon = "favicon";
   };
 
+  # prowlar = {
+  #   host = nodes.mars;
+  #   port = 9696;
+  #
+  #   dashy.section = "entertainment";
+  #   dashy.description = "Prowlar";
+  #   dashy.icon = "favicon";
+  # }
+
+  # flaresolverr = {
+  #   host = nodes.mars;
+  #   port = 8191;
+  #
+  #   dashy.section = "entertainment";
+  #   dashy.description = "Flaresolverr"; 
+  #   dashy.icon = "favicon";
+  # }
+
   # lidarr = {
   #   host = nodes.mars;
   #   port = 8686;
@@ -79,4 +97,12 @@
   #   dashy.description = "Lidarr Music Manager";
   #   dashy.icon = "favicon";
   # };
+
+  # transmission = {
+  #   host = nodes.mars;
+  #   port = 9091;
+  #   dashy.section = "entertainment";
+  #   dashy.description = "Transmission";
+  #   dashy.icon = "favicon";
+  # }
 }
