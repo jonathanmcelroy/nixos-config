@@ -85,7 +85,7 @@
   #   port = 8191;
   #
   #   dashy.section = "entertainment";
-  #   dashy.description = "Flaresolverr"; 
+  #   dashy.description = "Flaresolverr";
   #   dashy.icon = "favicon";
   # }
 
