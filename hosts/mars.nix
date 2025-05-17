@@ -46,6 +46,7 @@
     "d /var/media 0755 root root"
     "d /var/media/music 0755 media media"
     "d /var/media/movies 0755 media media"
+    "d /var/media/shows 0755 media media"
   ];
 
   services.prowlarr = {
@@ -66,6 +67,13 @@
     group = "media";
   };
 
+  services.sonarr = {
+    enable = true;
+    openFirewall = true;
+    user = "media";
+    group = "media";
+  };
+
   services.transmission = {
     enable = true;
     openFirewall = true;
@@ -74,6 +82,8 @@
       rpc-bind-address = "0.0.0.0";
       rpc-whitelist = "127.0.0.1,192.168.*";
     };
+    user = "media";
+    group = "media";
   };
 
   networking.firewall.allowedTCPPorts = [ 51413 ];
