@@ -12,6 +12,11 @@ with lib; let
   gateway = net.lib.net.cidr.host 1 "${ipv4}/24";
   interface_to_config = i: {
     matchConfig.Name = i;
+    networkConfig = {
+      LinkLocalAddressing = "no";
+      IPv6AcceptRA = "no";
+      DHCP = "no";
+    };
     address = [
       "${ipv4}/24"
       "${ipv6}/64"
