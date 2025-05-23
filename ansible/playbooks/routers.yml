@@ -73,7 +73,7 @@
         value:
           vid: 2
           ports: '1 0t'
-    
+
     - name: Configure vpn VLAN
       uci:
         command: section
@@ -283,11 +283,12 @@
     ############################################################################
 
     - name: Add vpn_table to routing table definitions
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/iproute2/rt_tables
         line: "200 vpn_table"
-        create: yes
+        create: true
         state: present
+        mode: '0644'
 
     - name: Create VPN routing rule
       uci:
@@ -349,7 +350,7 @@
         command: section
         config: wireless
         type: wifi-iface
-        name: "{{ wifi_name}}"
+        name: "{{ wifi_name }}"
         value:
           device: "{{ wifi_device.device }}"
           network: "{{ wifi_interface.network }}"
@@ -364,7 +365,7 @@
       vars:
         wifi_interface: "{{ wifi[0] }}"
         wifi_device: "{{ wifi[1] }}"
-        
+
         wifi_name: "{{ wifi_interface.network }}_{{ wifi_device.device }}"
 
     - name: Set wifi password
@@ -381,7 +382,7 @@
       vars:
         wifi_interface: "{{ wifi[0] }}"
         wifi_device: "{{ wifi[1] }}"
-        
+
         wifi_key: "wireless.{{ wifi_interface.network }}_{{ wifi_device.device }}"
       no_log: true
 
@@ -399,7 +400,7 @@
         find:
           name: lan
         value:
-          network: 
+          network:
             - lan
             - direct
           input: ACCEPT
@@ -466,11 +467,11 @@
         name: "lan_{{ item }}"
         value:
           src: lan
-          dest: "{{ item}}"
+          dest: "{{ item }}"
       loop:
         - wan
         - vpn
-      
+
     - name: Allow forwarding from vpn to other zones
       tags: firewall
       uci:
