@@ -20,16 +20,19 @@
       mutableExtensionsDir = false;
 
       extensions = with pkgs.vscode-extensions; [
-        vscodevim.vim
         bbenoist.nix
-        rust-lang.rust-analyzer
-        vadimcn.vscode-lldb
-        mkhl.direnv
-        gitlab.gitlab-workflow
         github.copilot
         github.copilot-chat
         github.vscode-github-actions
         github.vscode-pull-request-github
+        gitlab.gitlab-workflow
+        mkhl.direnv
+        ms-python.python
+        redhat.ansible
+        redhat.vscode-yaml
+        rust-lang.rust-analyzer
+        vadimcn.vscode-lldb
+        vscodevim.vim
       ];
 
       userSettings = {
