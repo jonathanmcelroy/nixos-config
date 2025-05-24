@@ -7,17 +7,17 @@
     wifi_password: "{{ secrets.wifi_password }}"
 
     wifi_devices:
-      - name: wireless.radio0
+      - device: radio0
         band: '5g'
         channel: '36'
-      - name: wireless.radio1
+      - device: radio1
         band: '2g'
         channel: '1'
     wifi_interfaces:
-      - name: wireless.default_radio0
-        device: 'radio0'
-      - name: wireless.default_radio1
-        device: 'radio1'
+      - network: vpn
+        ssid: jonathan-vpn
+      - network: direct
+        ssid: jonathan-direct
   roles:
     - role: gekmihesg.openwrt
   tasks:
@@ -28,6 +28,173 @@
       loop:
         - luci
         - luci-app-firewall
+        - luci-proto-wireguard
+        - wireguard-tools
+        - tcpdump
+
+    ############################################################################
+    ### VLANs
+    ############################################################################
+
+    - name: Configure switch
+      uci:
+        command: section
+        config: network
+        type: switch
+        name: switch0
+        find:
+          name: switch0
+        value:
+          reset: '1'
+          enable_vlan: '1'
+
+    - name: Configure default VLAN, for any port with untagged traffic
+      uci:
+        command: section
+        config: network
+        type: switch_vlan
+        name: default_vlan
+        find:
+          device: switch0
+          vlan: 1
+        value:
+          vid: 1
+          ports: '2 3 4 5 0t'
+
+    - name: Configure wan VLAN
+      uci:
+        command: section
+        config: network
+        type: switch_vlan
+        name: wan_vlan
+        find:
+          device: switch0
+          vlan: 2
+        value:
+          vid: 2
+          ports: '1 0t'
+
+    - name: Configure vpn VLAN
+      uci:
+        command: section
+        config: network
+        type: switch_vlan
+        name: vpn_vlan
+        find:
+          device: switch0
+          vlan: 10
+        value:
+          vid: 10
+          ports: '2t 3t 4t 5t 0t'
+
+    - name: Configure direct traffic VLAN
+      uci:
+        command: section
+        config: network
+        type: switch_vlan
+        name: direct_vlan
+        find:
+          device: switch0
+          vlan: 20
+        value:
+          vid: 20
+          ports: '2t 3t 4t 5t 0t'
+
+    ############################################################################
+    ### Devices
+    ############################################################################
+
+    - name: Configure default lan bridge device
+      uci:
+        command: section
+        config: network
+        type: device
+        name: br_lan
+        find:
+          name: br-lan
+        value:
+          type: bridge
+          ports: eth0.1
+
+    - name: Configure vpn lan bridge device
+      uci:
+        command: section
+        config: network
+        type: device
+        name: br_vpn
+        find:
+          name: br-vpn
+        value:
+          type: bridge
+          ports: eth0.10
+
+    - name: Configure direct traffic lan bridge device
+      uci:
+        command: section
+        config: network
+        type: device
+        name: br_direct
+        find:
+          name: br-direct
+        value:
+          type: bridge
+          ports: eth0.20
+
+    ############################################################################
+    ### Interfaces
+    ############################################################################
+
+    - name: Configure default interface
+      uci:
+        command: section
+        config: network
+        type: interface
+        name: lan
+        find:
+          device: br-lan
+        value:
+          proto: static
+          ip6assign: '60'
+          ipaddr:
+            - '192.168.1.1/24'
+            - '192.168.0.1/24'
+          peerdns: '0'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
+
+    - name: Configure VPN interface
+      uci:
+        command: section
+        config: network
+        type: interface
+        name: vpn
+        find:
+          device: br-vpn
+        value:
+          proto: static
+          ip6assign: '60'
+          ipaddr:
+            - '192.168.10.1/24'
+          peerdns: '0'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
+
+    - name: Configure direct traffic interface
+      uci:
+        command: section
+        config: network
+        type: interface
+        name: direct
+        find:
+          device: br-direct
+        value:
+          proto: static
+          ip6assign: '60'
+          ipaddr:
+            - '192.168.20.1/24'
+          peerdns: '0'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
 
     - name: Configure WAN
       uci:
@@ -38,10 +205,133 @@
           dns:
             - "{{ hostvars['mars']['ansible_host'] }}"
 
+    - name: Configure Wireguard Interface
+      uci:
+        command: section
+        config: network
+        name: protonvpn
+        type: interface
+        value:
+          proto: wireguard
+          private_key: "{{ secrets.proton_vpn_usco50_private_key }}"
+          addresses:
+            - '10.2.0.2/32'
+          # dns: '10.2.0.1'
+          dns:
+            - "{{ hostvars['mars']['ansible_host'] }}"
+
+    - name: Configure WireGuard peer
+      uci:
+        command: section
+        config: network
+        name: wireguard_protonvpn_peers
+        type: wireguard_protonvpn
+        find:
+          description: 'US-CO#50'
+        value:
+          public_key: 'z54+LsnV9L6PyS/MO4dPfJ650jiOVLVevYrWf2WsDzg='
+          endpoint_host: '212.102.44.166'
+          endpoint_port: '51820'
+          allowed_ips: '0.0.0.0/0'
+          persistent_keepalive: '25'
+
+    ############################################################################
+    ### DHCP
+    ############################################################################
+
+    - name: DHCP for default lan
+      uci:
+        command: section
+        config: dhcp
+        type: dhcp
+        name: lan
+        find:
+          interface: lan
+        value:
+          start: '100'
+          limit: '150'
+          leasetime: '12h'
+
+    - name: DHCP for VPN
+      uci:
+        command: section
+        config: dhcp
+        type: dhcp
+        name: vpn
+        find:
+          interface: vpn
+        value:
+          start: '100'
+          limit: '150'
+          leasetime: '12h'
+
+    - name: DHCP for direct traffic
+      uci:
+        command: section
+        config: dhcp
+        type: dhcp
+        name: direct
+        find:
+          interface: direct
+        value:
+          start: '100'
+          limit: '150'
+          leasetime: '12h'
+
+    ############################################################################
+    ### Routing
+    ############################################################################
+
+    - name: Add vpn_table to routing table definitions
+      ansible.builtin.lineinfile:
+        path: /etc/iproute2/rt_tables
+        line: "200 vpn_table"
+        create: true
+        state: present
+        mode: '0644'
+
+    - name: Create VPN routing rule
+      uci:
+        command: section
+        config: network
+        type: rule
+        name: vpn_rule
+        value:
+          in: vpn
+          lookup: vpn_table
+          priority: '100'
+
+    - name: Create VPN routing table default route
+      uci:
+        command: section
+        config: network
+        type: route
+        name: vpn_default
+        value:
+          interface: protonvpn
+          target: '0.0.0.0/0'
+          table: vpn_table
+
+    - name: Add local network routes to VPN table
+      uci:
+        command: section
+        config: network
+        type: route
+        name: vpn_local_routes
+        value:
+          interface: lan
+          target: 192.168.0.0/16
+          table: vpn_table
+
+    ############################################################################
+    ### Wifi
+    ############################################################################
+
     - name: Configure wifi device
+      tags: wifi
       uci:
         command: set
-        key: "{{ wifi.name }}"
+        key: "{{ wifi_key }}"
         value:
           type: 'mac80211'
           band: "{{ wifi.band }}"
@@ -50,37 +340,187 @@
       loop: "{{ wifi_devices }}"
       loop_control:
         loop_var: wifi
-        label: "{{ wifi.name }}"
+        label: "{{ wifi_key }}"
+      vars:
+        wifi_key: "wireless.{{ wifi.device }}"
 
     - name: Configure wifi interface
+      tags: wifi
       uci:
-        command: set
-        key: "{{ wifi.name }}"
+        command: section
+        config: wireless
+        type: wifi-iface
+        name: "{{ wifi_name }}"
         value:
-          device: "{{ wifi.device }}"
-          network: 'lan'
+          device: "{{ wifi_device.device }}"
+          network: "{{ wifi_interface.network }}"
           mode: 'ap'
-          ssid: '@xxxx[]::::::::::::::::::::::::>'
+          ssid: "{{ wifi_interface.ssid }}"
           encryption: 'psk2'
           disabled: '0'
-      loop: "{{ wifi_interfaces }}"
+      loop: "{{ wifi_interfaces | product(wifi_devices) }}"
       loop_control:
         loop_var: wifi
-        label: "{{ wifi.name }}"
+        label: "{{ wifi_name }}"
+      vars:
+        wifi_interface: "{{ wifi[0] }}"
+        wifi_device: "{{ wifi[1] }}"
+
+        wifi_name: "{{ wifi_interface.network }}_{{ wifi_device.device }}"
 
     - name: Set wifi password
+      tags: wifi
       uci:
         command: set
-        key: "{{ wifi.name }}"
+        key: "{{ wifi_key }}"
         value:
           key: "{{ wifi_password }}"
-      loop: "{{ wifi_interfaces }}"
+      loop: "{{ wifi_interfaces | product(wifi_devices) }}"
       loop_control:
         loop_var: wifi
-        label: "{{ wifi.name }}"
+        label: "{{ wifi_key }}"
+      vars:
+        wifi_interface: "{{ wifi[0] }}"
+        wifi_device: "{{ wifi[1] }}"
+
+        wifi_key: "wireless.{{ wifi_interface.network }}_{{ wifi_device.device }}"
       no_log: true
 
+    ############################################################################
+    ### Firewall
+    ############################################################################
+
+    - name: Configure lan firewall zone
+      tags: firewall
+      uci:
+        command: section
+        config: firewall
+        type: zone
+        name: lan
+        find:
+          name: lan
+        value:
+          network:
+            - lan
+            - direct
+          input: ACCEPT
+          output: ACCEPT
+          forward: ACCEPT
+
+    - name: Configure vpn firewall zone
+      tags: firewall
+      uci:
+        command: section
+        config: firewall
+        type: zone
+        name: vpn
+        find:
+          name: vpn
+        value:
+          network: vpn
+          input: ACCEPT
+          output: ACCEPT
+          forward: ACCEPT
+
+    - name: Configure wan firewall zone
+      tags: firewall
+      uci:
+        command: section
+        config: firewall
+        type: zone
+        name: wan
+        find:
+          name: wan
+        value:
+          network:
+            - wan
+            - wan6
+          input: REJECT
+          output: ACCEPT
+          forward: REJECT
+          masq: 1
+          mtu_fix: 1
+
+    - name: Configure protonvpn firewall zone
+      tags: firewall
+      uci:
+        command: section
+        config: firewall
+        type: zone
+        name: protonvpn
+        find:
+          name: protonvpn
+        value:
+          network: protonvpn
+          input: REJECT
+          output: ACCEPT
+          forward: REJECT
+          masq: 1
+          mtu_fix: 1
+
+    - name: Allow forwarding from lan to other zones
+      tags: firewall
+      uci:
+        command: section
+        config: firewall
+        type: forwarding
+        name: "lan_{{ item }}"
+        value:
+          src: lan
+          dest: "{{ item }}"
+      loop:
+        - wan
+        - vpn
+
+    - name: Allow forwarding from vpn to other zones
+      tags: firewall
+      uci:
+        command: section
+        config: firewall
+        type: forwarding
+        name: "vpn_{{ item }}"
+        value:
+          src: vpn
+          dest: "{{ item }}"
+      loop:
+        - protonvpn
+        - lan
+
+    - name: Force VLAN 10 traffic through WireGuard
+      tags: firewall
+      uci:
+        command: section
+        config: firewall
+        type: redirect
+        name: vpn_redirect
+        value:
+          src: vpn
+          dest: protonvpn
+          proto: 'tcp udp'
+          src_dport: '1-65535'
+          dest_ip: '!192.168.0.0/16'  # Don't redirect local traffic
+          target: DNAT
+
+    - name: Block direct WAN access from VLAN 10
+      tags: firewall
+      uci:
+        command: section
+        config: firewall
+        type: rule
+        name: block_vpn_wan
+        value:
+          name: Block-VPN-WAN
+          src: vpn
+          dest: wan
+          target: REJECT
+
+    ############################################################################
+    ### Commit changes
+    ############################################################################
+
     - name: Commit UCI changes
+      tags: always
+      when: not (no_commit | default(false) | bool)
       uci:
         command: commit
       notify: reload wifi

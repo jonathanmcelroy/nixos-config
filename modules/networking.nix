@@ -12,6 +12,11 @@ with lib; let
   gateway = net.lib.net.cidr.host 1 "${ipv4}/24";
   interface_to_config = i: {
     matchConfig.Name = i;
+    networkConfig = {
+      LinkLocalAddressing = "no";
+      IPv6AcceptRA = "no";
+      DHCP = "no";
+    };
     address = [
       "${ipv4}/24"
       "${ipv6}/64"
@@ -27,6 +32,14 @@ with lib; let
 
   cfg = config.solar-system.networking;
   interface = cfg.interface;
+  virtual_interface =
+    if ipv4 == null
+    then interface
+    else if builtins.match "192.168.10.*" ipv4 != null
+    then "vlan10"
+    else if builtins.match "192.168.20.*" ipv4 != null
+    then "vlan20"
+    else interface;
 
   hostname = config.networking.hostName;
   ipv4 = catalog.nodes.${hostname}.ip;
@@ -71,14 +84,45 @@ in {
       useNetworkd = true;
       # enableIPv6 = false;
     };
-    systemd.services.systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
+    systemd.services = {
+      systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
+    };
     systemd.network = {
       enable = true;
-      # networks = listToAttrs (map (i: {
-      #     name = "10-" + i;
-      #     value = interface_to_config i;
-      #   }) interfaces);
-      networks."10-${interface}" = interface_to_config interface;
+
+      netdevs = {
+        "30-vlan10" = {
+          netdevConfig = {
+            Name = "vlan10";
+            Kind = "vlan";
+          };
+          vlanConfig.Id = 10;
+        };
+        "30-vlan20" = {
+          netdevConfig = {
+            Name = "vlan20";
+            Kind = "vlan";
+          };
+          vlanConfig.Id = 20;
+        };
+      };
+
+      networks = {
+        "10-${interface}" = {
+          matchConfig.Name = interface;
+          networkConfig = {
+            LinkLocalAddressing = "no";
+            IPv6AcceptRA = "no";
+            DHCP = "no";
+            ConfigureWithoutCarrier = true;
+          };
+          vlan = [
+            "vlan10"
+            "vlan20"
+          ];
+        };
+        "50-network" = interface_to_config virtual_interface;
+      };
     };
 
     # Add all the hosts to the hosts file
