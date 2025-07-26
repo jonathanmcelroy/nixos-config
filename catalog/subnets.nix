@@ -1,68 +1,92 @@
 let
   net = import ../util/net.nix {};
 
-  base_networks = {
+  base_zones = {
     trusted = {
-      description = "Workstations, laptops, NAS's, admin devices, etc";
-      cidr = "192.168.1.0/24";
-      vlanId = 1;
-      vlan_tagged = false;
-      gatewayPolicy = "wan";
-      allowOutboundTo = ["any"];
+      canAccess = ["guest" "dmz_private" "dmz_public" "wan" "protonvpn"];
     };
-    # wan = {
-    #   description = "WAN network for internet access";
-    #   vlanId = 2;
-    #   gatewayPolicy = "uplink";
+    guest = {
+      canAccess = ["dmz_private" "dmz_public" "wan" "protonvpn"];
+    };
+    dmz_private = {
+      canAccess = ["dmz_public" "wan" "protonvpn"];
+    };
+    dmz_public = {
+      canAccess = ["wan" "protonvpn"];
+    };
+    wan = {
+      egress = true;
+      canAccess = [];
+    };
+    protonvpn = {
+      extra_networks = ["protonvpn"];
+      egress = true;
+      canAccess = [];
+    };
+  };
+  base_networks = {
+    # trusted = {
+    #   description = "Workstations, laptops, NAS's, admin devices, etc";
+    #   cidr = "192.168.10.0/24";
+    #   vlanId = 10;
+    #   vlan_tagged = false;
+    #   gatewayPolicy = "wan";
+    #   zones = ["trusted" "wan_out"];
     # };
+    wan = {
+      description = "WAN network for internet access";
+      vlanId = 2;
+      gatewayPolicy = "uplink";
+      zone = "wan";
+    };
     trusted_vpn = {
       description = "Workstations, laptops, admin devices, etc that need VPN";
-      cidr = "192.168.5.0/24";
-      vlanId = 5;
+      cidr = "192.168.11.0/24";
+      vlanId = 11;
       gatewayPolicy = "vpn";
-      allowOutboundTo = ["any"];
+      zone = "trusted";
     };
     guest = {
       description = "Guest network for visitors, IoT devices, etc";
       cidr = "192.168.20.0/24";
       vlanId = 20;
       gatewayPolicy = "wan";
-      allowOutboundTo = ["dmz_public" "dmz_private" "dmz_private_vpn"];
+      zone = "guest";
     };
     guest_vpn = {
       description = "Guest network for visitors, IoT devices, etc that need VPN";
       cidr = "192.168.21.0/24";
       vlanId = 21;
       gatewayPolicy = "vpn";
-      allowOutboundTo = ["dms_public" "dmz_private" "dmz_private_vpn"];
+      zone = "guest";
     };
-    dmz_public = {
+    dmz_pub = {
       description = "Public services, like web servers, mail servers, etc";
       cidr = "192.168.30.0/24";
       vlanId = 30;
       gatewayPolicy = "wan";
-      allowOutboundTo = [];
+      zone = "dmz_public";
     };
-    dmz_private = {
+    dmz_priv = {
       description = "Private services, like databases, internal services, etc";
       cidr = "192.168.31.0/24";
       vlanId = 31;
       gatewayPolicy = "wan";
-      allowOutboundTo = ["dmz_public" "dmz_private_vpn"];
+      zone = "dmz_private";
     };
-    dmz_private_vpn = {
+    dmz_priv_vpn = {
       description = "Private services that need outgoing via the VPN";
       cidr = "192.168.32.0/24";
       vlanId = 32;
       gatewayPolicy = "vpn";
-      allowOutboundTo = ["dmz_public" "dmz_private"];
+      zone = "dmz_private";
     };
     wan_out = {
       description = "Hosts that only need to access the internet, like smart devices";
       cidr = "192.168.40.0/24";
       vlanId = 40;
       gatewayPolicy = "wan";
-      allowOutboundTo = [];
+      zone = "guest";
     };
 
     # vpn_in = {
@@ -71,19 +95,53 @@ let
     # };
   };
 
-  decorate_network = name: network:
-    network
-    // {
-      inherit name;
+  decorate_zone = name: zone:
+    assert (
+      builtins.all (x: builtins.hasAttr x zones) zone.canAccess
+    );
+      zone
+      // {
+        inherit name;
+      };
+  zones = builtins.mapAttrs decorate_zone base_zones;
 
-      # The gateway for each network is always the first IP in the network
-      gateway =
-        if builtins.hasAttr "cidr" network
-        then net.lib.net.cidr.host 1 network.cidr
-        else null;
-    };
+  decorate_network = name: network: let
+    # The gateway for each network is always the first IP in the network
+    gateway =
+      if builtins.hasAttr "cidr" network
+      then net.lib.net.cidr.host 1 network.cidr
+      else null;
+  in
+    assert (
+      builtins.stringLength name <= 12
+    );
+    assert (
+      builtins.hasAttr network.zone zones
+    );
+      network
+      // {
+        inherit name gateway;
+        gatewayCidr =
+          if !(builtins.isNull gateway)
+          then gateway + "/24"
+          else null;
+      };
 
   networks = builtins.mapAttrs decorate_network base_networks;
-in {
-  inherit networks;
-}
+in
+  # Assert that all zones only reference other zones
+  assert (
+    builtins.all (z: builtins.all (x: builtins.hasAttr x zones) z.canAccess) (builtins.attrValues zones)
+  ); {
+    inherit networks zones;
+
+    forwarding_rules =
+      builtins.concatMap
+      (zone:
+        map (dest: {
+          inherit dest;
+          src = zone.name;
+        })
+        zone.canAccess)
+      (builtins.attrValues zones);
+  }
