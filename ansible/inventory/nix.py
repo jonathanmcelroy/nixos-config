@@ -10,7 +10,10 @@ CATALOG_PATH = os.path.join(DIRNAME, "..", "..", "catalog", "default.nix")
 def get_inventory():
     # Evaluate the Nix expression and get the catalog as JSON
     nix_output = subprocess.check_output(["nix", "eval", "--json", "-f", CATALOG_PATH])
-    servers = json.loads(nix_output)
+    catalog = json.loads(nix_output)
+
+    subnets = catalog.get("subnets", {})
+    nodes = catalog.get("nodes", {})
 
     # Convert the Nix data into an Ansible inventory format
     inventory = {
@@ -24,18 +27,26 @@ def get_inventory():
     }
 
 
-    for name, props in servers["nodes"].items():
+    for name, props in nodes.items():
         if "ip" not in props:
             raise ValueError(f"Node '{name}' does not have an IP address.")
 
-        inventory["_meta"]["hostvars"][name] = {
+        roles = props.get("roles", [])
+
+        hostvars = {
             "ansible_host": props["ip"],
-            "roles": props.get("roles", [])
+            "roles": roles,
         }
+
+        # Only include networks if the node is a router
+        if "router" in roles:
+            hostvars["subnets"] = subnets
+
+        inventory["_meta"]["hostvars"][name] = hostvars
         inventory["all"]["hosts"].append(name)
 
         # Add roles as groups
-        for role in props.get("roles", []):
+        for role in roles:
             if role not in inventory:
                 inventory[role] = {"hosts": []}
             inventory[role]["hosts"].append(name)

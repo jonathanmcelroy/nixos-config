@@ -1,5 +1,5 @@
 let
-  net = import ../util/net.nix {} ;
+  net = import ../util/net.nix {};
 
   base_networks = {
     trusted = {
@@ -77,7 +77,7 @@ let
       inherit name;
 
       # The gateway for each network is always the first IP in the network
-      gateway = 
+      gateway =
         if builtins.hasAttr "cidr" network
         then net.lib.net.cidr.host 1 network.cidr
         else null;
