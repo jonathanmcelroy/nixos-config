@@ -37,6 +37,8 @@ with lib; let
     then interface
     else if builtins.match "192.168.10.*" ipv4 != null
     then "vlan10"
+    else if builtins.match "192.168.11.*" ipv4 != null
+    then "vlan11"
     else if builtins.match "192.168.20.*" ipv4 != null
     then "vlan20"
     else interface;
@@ -105,6 +107,13 @@ in {
           };
           vlanConfig.Id = 20;
         };
+        "30-vlan11" = {
+          netdevConfig = {
+            Name = "vlan11";
+            Kind = "vlan";
+          };
+          vlanConfig.Id = 11;
+        };
       };
 
       networks = {
@@ -118,6 +127,7 @@ in {
           };
           vlan = [
             "vlan10"
+            "vlan11"
             "vlan20"
           ];
         };
