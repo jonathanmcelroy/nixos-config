@@ -14,9 +14,9 @@
         band: '2g'
         channel: '1'
     wifi_interfaces:
-      - network: vpn
+      - network: guest_vpn
         ssid: jonathan-vpn
-      - network: direct
+      - network: guest
         ssid: jonathan-direct
   roles:
     - role: gekmihesg.openwrt
@@ -103,6 +103,7 @@
     ############################################################################
 
     - name: Configure interfaces
+      tags: dns
       uci:
         command: section
         config: network
