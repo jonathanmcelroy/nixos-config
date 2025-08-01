@@ -3,7 +3,8 @@
   hosts: router
   gather_facts: false
   vars:
-    secrets: "{{ lookup('community.sops.sops', 'sops_secrets.yaml') | from_yaml }}"
+    secrets_file: "../../secrets/networking.yaml"
+    secrets: "{{ lookup('community.sops.sops', secrets_file) | from_yaml }}"
     wifi_password: "{{ secrets.wifi_password }}"
 
     wifi_devices:
