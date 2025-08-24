@@ -19,14 +19,14 @@ with lib; let
     };
     address = [
       "${ipv4}/24"
-      "${ipv6}/64"
+      # "${ipv6}/64"
     ];
     routes = [
       {Gateway = gateway;}
     ];
     dns = [
       catalog.services.adguard.host.ip
-      catalog.services.adguard.host.ipv6
+      # catalog.services.adguard.host.ipv6
     ];
   };
 
@@ -45,25 +45,9 @@ with lib; let
 
   hostname = config.networking.hostName;
   ipv4 = catalog.nodes.${hostname}.ip;
-  ipv6 = catalog.nodes.${hostname}.ipv6;
-in {
-  options = {
-    solar-system.networking = {
-      enable = mkEnableOption "Configure simple networking for this system";
-      # interfaces = mkOption {
-      #   type = types.listOf types.str;
-      #   description = "A list of interfaces to connect the IP addresses to. The interfaces must be the same length as the IP addresses.";
-      #   default = [];
-      # };
-      interface = mkOption {
-        type = types.str;
-        description = "The interface to connect the IP addresses to";
-        default = [];
-      };
-    };
-  };
+  # ipv6 = catalog.nodes.${hostname}.ipv6;
 
-  config = mkIf cfg.enable {
+  always_setup = {
     assertions = [
       {
         assertion = hasAttr hostname catalog.nodes;
@@ -71,72 +55,9 @@ in {
           The hostname ${hostname} is not in the catalog: ${attrNames catalog.nodes}.
         '';
       }
-      # {
-      #   assertion = length addresses == length interfaces;
-      #   message = ''
-      #     The number of interfaces for ${hostname} (${toString interfaces}) must be the same as the number of IP addresses (${toString addresses}).
-      #   '';
-      # }
     ];
 
-    # Configure the networking to use systemd-networkd
-    networking = {
-      networkmanager.enable = false;
-      useDHCP = false;
-      useNetworkd = true;
-      # enableIPv6 = false;
-    };
-    systemd.services = {
-      systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
-    };
-    systemd.network = {
-      enable = true;
-
-      netdevs = {
-        "30-vlan10" = {
-          netdevConfig = {
-            Name = "vlan10";
-            Kind = "vlan";
-          };
-          vlanConfig.Id = 10;
-        };
-        "30-vlan20" = {
-          netdevConfig = {
-            Name = "vlan20";
-            Kind = "vlan";
-          };
-          vlanConfig.Id = 20;
-        };
-        "30-vlan11" = {
-          netdevConfig = {
-            Name = "vlan11";
-            Kind = "vlan";
-          };
-          vlanConfig.Id = 11;
-        };
-      };
-
-      networks = {
-        "10-${interface}" = {
-          matchConfig.Name = interface;
-          networkConfig = {
-            LinkLocalAddressing = "no";
-            IPv6AcceptRA = "no";
-            DHCP = "no";
-            ConfigureWithoutCarrier = true;
-          };
-          vlan = [
-            "vlan10"
-            "vlan11"
-            "vlan20"
-          ];
-        };
-        "50-network" = interface_to_config virtual_interface;
-      };
-    };
-
     # Add all the hosts to the hosts file
-    # networking.extraHosts = concatStringsSep "\n" (mapAttrsToList (name: value: "${head value} ${name}") all_addresses);
     networking.extraHosts = concatStringsSep "\n" (
       mapAttrsToList (name: value: "${value.ip} ${name}") catalog.nodes
     );
@@ -150,4 +71,87 @@ in {
       };
     };
   };
+  automatic_systemd_setup = {
+    networking = {
+      networkmanager.enable = false;
+      useDHCP = false;
+      useNetworkd = true;
+      # enableIPv6 = false;
+    };
+    systemd = {
+      services = {
+        systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
+      };
+      network = {
+        enable = true;
+
+        netdevs = {
+          "30-vlan10" = {
+            netdevConfig = {
+              Name = "vlan10";
+              Kind = "vlan";
+            };
+            vlanConfig.Id = 10;
+          };
+          "30-vlan20" = {
+            netdevConfig = {
+              Name = "vlan20";
+              Kind = "vlan";
+            };
+            vlanConfig.Id = 20;
+          };
+          "30-vlan11" = {
+            netdevConfig = {
+              Name = "vlan11";
+              Kind = "vlan";
+            };
+            vlanConfig.Id = 11;
+          };
+        };
+
+        networks = {
+          "10-${interface}" = {
+            matchConfig.Name = interface;
+            networkConfig = {
+              LinkLocalAddressing = "no";
+              IPv6AcceptRA = "no";
+              DHCP = "no";
+              ConfigureWithoutCarrier = true;
+            };
+            vlan = [
+              "vlan10"
+              "vlan11"
+              "vlan20"
+            ];
+          };
+          "50-network" = interface_to_config virtual_interface;
+        };
+      };
+    };
+  };
+in {
+  options = {
+    solar-system.networking = {
+      enable = mkEnableOption "Configure simple networking for this system";
+      automatic = mkOption {
+        type = types.bool;
+        description = "Automatically configure the networking based on the catalog";
+        default = true;
+      };
+      # interfaces = mkOption {
+      #   type = types.listOf types.str;
+      #   description = "A list of interfaces to connect the IP addresses to. The interfaces must be the same length as the IP addresses.";
+      #   default = [];
+      # };
+      interface = mkOption {
+        type = types.str;
+        description = "The interface to connect the IP addresses to";
+      };
+    };
+  };
+
+  config = mkMerge [
+    (mkIf cfg.enable always_setup)
+    (mkIf (cfg.enable && cfg.automatic) automatic_systemd_setup)
+  ];
 }

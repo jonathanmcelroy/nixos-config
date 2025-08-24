@@ -25,14 +25,14 @@ let
     };
   };
   base_networks = {
-    # trusted = {
-    #   description = "Workstations, laptops, NAS's, admin devices, etc";
-    #   cidr = "192.168.10.0/24";
-    #   vlanId = 10;
-    #   vlan_tagged = false;
-    #   gatewayPolicy = "wan";
-    #   zones = ["trusted" "wan_out"];
-    # };
+    trusted = {
+      description = "Workstations, laptops, NAS's, admin devices, etc";
+      cidr = "192.168.10.0/24";
+      vlanId = 10;
+      vlan_tagged = false;
+      gatewayPolicy = "wan";
+      zone = "trusted";
+    };
     wan = {
       description = "WAN network for internet access";
       vlanId = 2;
