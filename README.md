@@ -54,7 +54,9 @@ nix-repl> nixosConfigurations.earth.config.systemd.network.networks
 Architecture
 ------------
 
-All the hosts are listed in the catalog/nodes.nix file (taking inspiration from [this repo](https://github.com/jhillyerd/homelab)), pointing at the appropriate config files. 
+All static and global information about the infrastructure is stored in the `catalog/` directory. This includes the network configuration, hardware information, and service definitions.
+
+The hosts are listed in the catalog/nodes.nix file (taking inspiration from [this repo](https://github.com/jhillyerd/homelab)), pointing at the appropriate config files. 
 
 Each machine's software configuration is stored in `hosts/{hostname}.nix`. Each machine's hardware configuration is stored in `hw/{hostname}.nix`
 
