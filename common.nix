@@ -118,11 +118,16 @@ in {
   # Secrets
   ############################################################################
 
-  sops.defaultSopsFile = ./secrets/github-runner.yaml;
-  sops.secrets.github-runner-token = {};
+  # sops.defaultSopsFile = ./secrets/github-runner.yaml;
+  sops.secrets.github-runner-token = {
+    sopsFile = ./secrets/github-runner.yaml;
+  };
   sops.secrets.grafana-discord-alert-webhook = {
     sopsFile = ./secrets/grafana.yaml;
   };
+  # sops.secrets.proton_vpn_usco50_private_key = {
+  #   sopsFile = ./secrets/networking.yaml;
+  # };
 
   ############################################################################
   # Package Management
@@ -165,5 +170,7 @@ in {
     vim
     wget
     lm_sensors # Hardware sensors
+
+    networkmanagerapplet
   ];
 }
