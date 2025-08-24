@@ -115,9 +115,11 @@
         value:
           proto: "{{ protocol }}"
           ipaddr: "{{ ipaddr }}"
-          peerdns: '0'
-          dns:
-            - "{{ hostvars['mars']['ansible_host'] }}"
+
+          # Uplinks should always get their dns from remote server so router can
+          # use it whatever the conditions
+          peerdns: "{{ '0' if gatewayPolicy == 'uplink' else '1' }}"
+          dns: "{{ [] if gatewayPolicy == 'uplink' else inner_dns }}"
       loop: "{{ subnets.networks.values() }}"
       loop_control:
         label: "{{ item.name }}"
@@ -132,6 +134,9 @@
           {{
             item.gatewayCidr | default('')
           }}
+
+        inner_dns:
+          - "{{ hostvars['mars']['ansible_host'] }}"
 
     - name: Configure Wireguard Interface
       uci:
