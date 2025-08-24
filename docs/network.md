@@ -1,16 +1,16 @@
 ## Requirements
 
-1. If you join the network via Ethernet, by default you are given an IP and will be using the VPN for public requests
-2. You can assign a static IP that will bypass the VPN for public requests
-3. If you join one WiFi network, you are given an IP and will be using the VPN for public requests
-4. If you join the other WiFi network, you are given an IP and will bypass the VPN for public requests
-5. Anyone who joins the network will be able to access the IP of anyone else who joins the network, no isolation.
+1. If a host joins the network via Ethernet with no config, it is trusted and uses the WAN for outgoing traffic.
+2. If a host joins the vpn WiFi network, it is put into the guest vlan and uses VPN for outgoing traffic
+3. If a host joins the wan WiFi network, it is put into the guest vlan and uses WAN for outgoing traffic
+4. The network needs to have a zone for public services that trusted hosts and guests can access
+5. The network needs to have a zone for private services that trusted hosts and guests can access
 
 ## VLANs
 
 | VLAN | Name           | Purpose                                 |
 | ---- | -------------- | --------------------------------------- |
-| 01   | Default        | Untagged traffic through VPN VLAN       |
+| 00   | Trusted        | Untagged traffic through VPN VLAN       |
 | 02   | WAN            | The WAN side of the routes              |
 | 10   | VPN            | Routes external traffic through VPN     |
 | 20   | Direct         | Routes external traffic directly to WAN |
