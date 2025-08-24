@@ -233,7 +233,7 @@
         type: route
         name: vpn_local_routes
         value:
-          interface: lan
+          interface: trusted
           target: 192.168.0.0/16
           table: vpn_table
 
