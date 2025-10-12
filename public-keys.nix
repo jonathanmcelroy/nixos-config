@@ -1,6 +1,5 @@
 # The public keys that should be added to all users that I can ssh to
 [
-  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICYti//MUvKXwG0Lo3+40GnwDxxrEDtnIAEQ+HdhBX4i jmcelroy-dev@jmcelroy-home"
+  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH4el+BZxLas8F9emwBe4pS86vF2p4RA3DDACy3kywPL jmcelroy@earth"
   "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFDbF04s6UoPsadOBPS60u6vaGP99HVnX9FKtUjnI5Og"
-  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQChnRiCg/E9+XXhfc/XmrtGB1w49cTihKyvCqQQf0aMTMgtpwaj0nYPXPmns7M+BIj/uq7A5EXegaWQFdzQXap5moJxmB40GNwiuNMTXw1FRxpyFBACGw+AWMisBzQZOg5VuFpUs+zH4q8Ay0Zw2xejLDrIuonrO5h9e586/JMq6m/fJZqhDJV0EVUgFN50O3NuO8GzBBOiChT6SQejf5M7SNFOs8wWCLGMEEyg2Q04zjoDGYXeaM+paphZDKyRl0d0zTjnoQJGQiktIWEF3F88ZTXn5NBUsiQSRSsk6nK6Yu986zy+UUtZjn0jmjO+7SEmO8EdQb4cfZ/Z53OGUvx/CJypH4yOOvnw9LQ+ALGW4uArOTd890HbuLlhOamgl7xTgQTKIF3ohQsVbIpF1trXuD4GAvgoL7Ve96Mje1e15VmK8EPIE4i+3FOpDCtl/sdYGub2beU1qny48pkJfwFTYrwRgIWd0z5/oC+FF5Y1TlNV6osu5Vn4RchYwdhnHzU= jmcelroy-dev@earth"
 ]

@@ -23,9 +23,9 @@ in
           mars.wait_for_unit("adguardhome.service")
 
         with subtest("Standard users are on all hosts"):
-          earth.succeed("getent passwd jmcelroy-dev")
+          earth.succeed("getent passwd jmcelroy")
           earth.succeed("getent passwd nixos-deploy")
-          mars.succeed("getent passwd jmcelroy-dev")
+          mars.succeed("getent passwd jmcelroy")
           mars.succeed("getent passwd nixos-deploy")
 
         with subtest("Nodes can ping each other"):

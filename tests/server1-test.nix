@@ -19,7 +19,7 @@ pkgs.testers.runNixOSTest {
   };
 
   testScript = ''
-    user = "jmcelroy-dev";
+    user = "jmcelroy";
     machine.wait_for_unit("default.target")
     machine.succeed(f"su -- {user} -c 'which bash'")
   '';

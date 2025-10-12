@@ -43,7 +43,7 @@ in {
     ./modules # Include all the custom modules
 
     # Users on all systems
-    ./users/jmcelroy-dev
+    ./users/jmcelroy
     ./users/nixos-deploy
   ];
 

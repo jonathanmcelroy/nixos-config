@@ -17,6 +17,7 @@
       "networkmanager"
       "wheel"
     ];
+    openssh.authorizedKeys.keys = import ../../public-keys.nix;
   };
   home-manager.users.jmcelroy = import ./home.nix;
 }

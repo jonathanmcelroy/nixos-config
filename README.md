@@ -1,7 +1,7 @@
 Jonathan McElroy's NixOS configuration
 ======
 
-This repository is to store my configuration-as-code for all my machines. It uses nix flakes to manage the configuration. The configuration is stored in the `flake.nix` file.
+This repository is to store my configuration for all my machines. Some of the machines are configured using nix, some are configured using ansible. The nixos configuration is stored in the `flake.nix` file.
 
 Usage
 -----

@@ -46,8 +46,8 @@ with lib; {
           };
           ipv4 = {
             method = "manual";
-            address1 = "192.168.1.10/24,192.168.1.1";
-            dns = "192.168.1.1";
+            address1 = "192.168.10.10/24,192.168.10.1";
+            dns = "192.168.10.1";
           };
           ipv6 = {
             method = "disabled";
