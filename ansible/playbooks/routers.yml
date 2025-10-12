@@ -3,7 +3,8 @@
   hosts: router
   gather_facts: false
   vars:
-    secrets: "{{ lookup('community.sops.sops', 'sops_secrets.yaml') | from_yaml }}"
+    secrets_file: "../../secrets/networking.yaml"
+    secrets: "{{ lookup('community.sops.sops', secrets_file) | from_yaml }}"
     wifi_password: "{{ secrets.wifi_password }}"
 
     wifi_devices:
@@ -14,9 +15,9 @@
         band: '2g'
         channel: '1'
     wifi_interfaces:
-      - network: vpn
+      - network: guest_vpn
         ssid: jonathan-vpn
-      - network: direct
+      - network: guest
         ssid: jonathan-direct
   roles:
     - role: gekmihesg.openwrt
@@ -48,162 +49,94 @@
           reset: '1'
           enable_vlan: '1'
 
-    - name: Configure default VLAN, for any port with untagged traffic
+    - name: Configure each VLAN
       uci:
         command: section
         config: network
+        name: "{{ item.name }}_vlan"
         type: switch_vlan
-        name: default_vlan
         find:
           device: switch0
-          vlan: 1
+          vlan: "{{ item.vlanId }}"
         value:
-          vid: 1
-          ports: '2 3 4 5 0t'
+          vid: "{{ item.vlanId }}"
+          description: "{{ item.description }}"
+          ports: "{{ ports }}"
+      loop: "{{ subnets.networks.values() }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        wan_ports: '0t 1'
+        internal_ports: '0t 2 3 4 5'
+        internal_tagged_ports: '0t 2t 3t 4t 5t'
 
-    - name: Configure wan VLAN
-      uci:
-        command: section
-        config: network
-        type: switch_vlan
-        name: wan_vlan
-        find:
-          device: switch0
-          vlan: 2
-        value:
-          vid: 2
-          ports: '1 0t'
-
-    - name: Configure vpn VLAN
-      uci:
-        command: section
-        config: network
-        type: switch_vlan
-        name: vpn_vlan
-        find:
-          device: switch0
-          vlan: 10
-        value:
-          vid: 10
-          ports: '2t 3t 4t 5t 0t'
-
-    - name: Configure direct traffic VLAN
-      uci:
-        command: section
-        config: network
-        type: switch_vlan
-        name: direct_vlan
-        find:
-          device: switch0
-          vlan: 20
-        value:
-          vid: 20
-          ports: '2t 3t 4t 5t 0t'
+        ports: >-
+          {{
+            wan_ports
+              if item.gatewayPolicy == 'uplink' else
+            internal_tagged_ports
+              if item.vlan_tagged | default(true) else
+            internal_ports
+          }}
 
     ############################################################################
     ### Devices
     ############################################################################
 
-    - name: Configure default lan bridge device
+    - name: Configure bridge devices for each VLAN
       uci:
         command: section
         config: network
         type: device
-        name: br_lan
+        name: "br_{{ item.name }}"
         find:
-          name: br-lan
+          ports: "eth0.{{ item.vlanId }}"
         value:
-          type: bridge
-          ports: eth0.1
-
-    - name: Configure vpn lan bridge device
-      uci:
-        command: section
-        config: network
-        type: device
-        name: br_vpn
-        find:
-          name: br-vpn
-        value:
-          type: bridge
-          ports: eth0.10
-
-    - name: Configure direct traffic lan bridge device
-      uci:
-        command: section
-        config: network
-        type: device
-        name: br_direct
-        find:
-          name: br-direct
-        value:
-          type: bridge
-          ports: eth0.20
+          name: "br_{{ item.name }}"
+          type: 'bridge'
+          ipv6: '0'
+      loop: "{{ subnets.networks.values() }}"
+      loop_control:
+        label: "{{ item.name }}"
 
     ############################################################################
     ### Interfaces
     ############################################################################
 
-    - name: Configure default interface
+    - name: Configure interfaces
+      tags: dns
       uci:
         command: section
         config: network
         type: interface
-        name: lan
+        name: "{{ item.name }}"
         find:
-          device: br-lan
+          device: "br_{{ item.name }}"
         value:
-          proto: static
-          ip6assign: '60'
-          ipaddr:
-            - '192.168.1.1/24'
-            - '192.168.0.1/24'
-          peerdns: '0'
-          dns:
-            - "{{ hostvars['mars']['ansible_host'] }}"
+          proto: "{{ protocol }}"
+          ipaddr: "{{ ipaddr }}"
 
-    - name: Configure VPN interface
-      uci:
-        command: section
-        config: network
-        type: interface
-        name: vpn
-        find:
-          device: br-vpn
-        value:
-          proto: static
-          ip6assign: '60'
-          ipaddr:
-            - '192.168.10.1/24'
-          peerdns: '0'
-          dns:
-            - "{{ hostvars['mars']['ansible_host'] }}"
+          # Uplinks should always get their dns from remote server so router can
+          # use it whatever the conditions
+          peerdns: "{{ '0' if item.gatewayPolicy == 'uplink' else '1' }}"
+          dns: "{{ [] if item.gatewayPolicy == 'uplink' else inner_dns }}"
+      loop: "{{ subnets.networks.values() }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        protocol: >-
+          {{
+            'dhcp'
+              if item.gatewayPolicy == 'uplink' else
+            'static'
+          }}
+        ipaddr: >-
+          {{
+            item.gatewayCidr | default('')
+          }}
 
-    - name: Configure direct traffic interface
-      uci:
-        command: section
-        config: network
-        type: interface
-        name: direct
-        find:
-          device: br-direct
-        value:
-          proto: static
-          ip6assign: '60'
-          ipaddr:
-            - '192.168.20.1/24'
-          peerdns: '0'
-          dns:
-            - "{{ hostvars['mars']['ansible_host'] }}"
-
-    - name: Configure WAN
-      uci:
-        command: set
-        key: network.wan
-        value:
-          peerdns: '0'
-          dns:
-            - "{{ hostvars['mars']['ansible_host'] }}"
+        inner_dns:
+          - "{{ hostvars['mars']['ansible_host'] }}"
 
     - name: Configure Wireguard Interface
       uci:
@@ -239,44 +172,21 @@
     ### DHCP
     ############################################################################
 
-    - name: DHCP for default lan
+    - name: DHCP for each interface
       uci:
         command: section
         config: dhcp
         type: dhcp
-        name: lan
+        name: "{{ item.name }}"
         find:
-          interface: lan
+          interface: "{{ item.name }}"
         value:
           start: '100'
           limit: '150'
           leasetime: '12h'
-
-    - name: DHCP for VPN
-      uci:
-        command: section
-        config: dhcp
-        type: dhcp
-        name: vpn
-        find:
-          interface: vpn
-        value:
-          start: '100'
-          limit: '150'
-          leasetime: '12h'
-
-    - name: DHCP for direct traffic
-      uci:
-        command: section
-        config: dhcp
-        type: dhcp
-        name: direct
-        find:
-          interface: direct
-        value:
-          start: '100'
-          limit: '150'
-          leasetime: '12h'
+      loop: "{{ subnets.networks.values() }}"
+      loop_control:
+        label: "{{ item.name }}"
 
     ############################################################################
     ### Routing
@@ -290,16 +200,20 @@
         state: present
         mode: '0644'
 
-    - name: Create VPN routing rule
+    - name: Create VPN routing rule for all interfaces with the vpn gateway policy
       uci:
         command: section
         config: network
         type: rule
-        name: vpn_rule
+        name: "{{ item.name }}_rule"
         value:
-          in: vpn
+          in: "{{ item.name }}"
           lookup: vpn_table
           priority: '100'
+      loop: "{{ subnets.networks.values() }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.gatewayPolicy == 'vpn'
 
     - name: Create VPN routing table default route
       uci:
@@ -319,7 +233,7 @@
         type: route
         name: vpn_local_routes
         value:
-          interface: lan
+          interface: trusted
           target: 192.168.0.0/16
           table: vpn_table
 
@@ -390,129 +304,90 @@
     ### Firewall
     ############################################################################
 
-    - name: Configure lan firewall zone
+    - name: Create each zone
       tags: firewall
       uci:
         command: section
         config: firewall
         type: zone
-        name: lan
+        name: "{{ item.name }}"
         find:
-          name: lan
+          name: "{{ item.name }}"
         value:
-          network:
-            - lan
-            - direct
-          input: ACCEPT
+          network: "{{ networks }}"
+          input: "{{ input }}"
           output: ACCEPT
-          forward: ACCEPT
+          forward: "{{ forward }}"
+          masq: "{{ masq }}"
+          mtu_fix: "{{ mtu_fix }}"
+      loop: "{{ subnets.zones.values() }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        egress: "{{ item.egress | default(false) }}"
+        input: "{{ 'REJECT' if egress else 'ACCEPT' }}"
+        forward: "{{ 'REJECT' if egress else 'ACCEPT' }}"
+        masq: "{{ '1' if egress else '0' }}"
+        mtu_fix: "{{ '1' if egress else '0' }}"
 
-    - name: Configure vpn firewall zone
-      tags: firewall
-      uci:
-        command: section
-        config: firewall
-        type: zone
-        name: vpn
-        find:
-          name: vpn
-        value:
-          network: vpn
-          input: ACCEPT
-          output: ACCEPT
-          forward: ACCEPT
+        # All subnets with the zone property that matches this item.name
+        networks: >-
+          {{
+            subnets.networks.values()
+              | selectattr('zone', 'equalto', item.name)
+              | map(attribute='name')
+              | list
+              + item.extra_networks | default([])
+          }}
 
-    - name: Configure wan firewall zone
-      tags: firewall
-      uci:
-        command: section
-        config: firewall
-        type: zone
-        name: wan
-        find:
-          name: wan
-        value:
-          network:
-            - wan
-            - wan6
-          input: REJECT
-          output: ACCEPT
-          forward: REJECT
-          masq: 1
-          mtu_fix: 1
-
-    - name: Configure protonvpn firewall zone
-      tags: firewall
-      uci:
-        command: section
-        config: firewall
-        type: zone
-        name: protonvpn
-        find:
-          name: protonvpn
-        value:
-          network: protonvpn
-          input: REJECT
-          output: ACCEPT
-          forward: REJECT
-          masq: 1
-          mtu_fix: 1
-
-    - name: Allow forwarding from lan to other zones
+    - name: Allow forwarding between zones
       tags: firewall
       uci:
         command: section
         config: firewall
         type: forwarding
-        name: "lan_{{ item }}"
+        name: "{{ item.src }}_{{ item.dest }}"
         value:
-          src: lan
-          dest: "{{ item }}"
-      loop:
-        - wan
-        - vpn
+          src: "{{ item.src }}"
+          dest: "{{ item.dest }}"
+      loop: "{{ subnets.forwarding_rules }}"
 
-    - name: Allow forwarding from vpn to other zones
-      tags: firewall
-      uci:
-        command: section
-        config: firewall
-        type: forwarding
-        name: "vpn_{{ item }}"
-        value:
-          src: vpn
-          dest: "{{ item }}"
-      loop:
-        - protonvpn
-        - lan
-
-    - name: Force VLAN 10 traffic through WireGuard
+    - name: Force outgoing vpn traffic through proton
       tags: firewall
       uci:
         command: section
         config: firewall
         type: redirect
-        name: vpn_redirect
+        name: "{{ item.name }}_redirect"
         value:
-          src: vpn
+          name: "{{ item.name }}_redirect"
+          src: "{{ item.name }}"
           dest: protonvpn
           proto: 'tcp udp'
           src_dport: '1-65535'
           dest_ip: '!192.168.0.0/16'  # Don't redirect local traffic
           target: DNAT
+      loop: "{{ subnets.networks.values() }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.gatewayPolicy == 'vpn'
 
-    - name: Block direct WAN access from VLAN 10
+    - name: Block direct WAN access from outgoing vpn zones
       tags: firewall
       uci:
         command: section
         config: firewall
         type: rule
-        name: block_vpn_wan
+        name: "block_{{ item.name }}_wan"
         value:
-          name: Block-VPN-WAN
-          src: vpn
+          name: "Block-{{ item.name }}-WAN"
+          src: "{{ item.name }}"
           dest: wan
           target: REJECT
+      loop: "{{ subnets.networks.values() }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.gatewayPolicy == 'vpn'
 
     ############################################################################
     ### Commit changes
